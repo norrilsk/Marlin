@@ -1,2 +1,2 @@
 #!/bin/bash
-cmake ./code/ -B../bin/debug/
+cmake ./code/ -B./bin/debug/

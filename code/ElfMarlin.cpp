@@ -37,7 +37,7 @@ void print_ptype(size_t pt)
 ElfMarlin::ElfMarlin(const char * path_to_elf, int log)
 {
     int class_;
-    char * id , bytes [5];
+    char * id ;
     GElf_Ehdr ehdr ;
     
     if ( elf_version ( EV_CURRENT ) == EV_NONE )
@@ -76,8 +76,7 @@ ElfMarlin::ElfMarlin(const char * path_to_elf, int log)
     
         for (int i = 0; i <= EI_ABIVERSION; i++)
         {
-            vis(bytes, id[i], VIS_WHITE, 0);
-            printf(" [ ’%s ’ %X ] ", bytes, id[i]);
+            printf(" [ %X ] ", id[i]);
         }
         printf(" \n ");
     
@@ -95,6 +94,7 @@ ElfMarlin::ElfMarlin(const char * path_to_elf, int log)
     i_class = class_;
     type = ehdr.e_type;
     machine = ehdr.e_machine;
+    i_data = id[5];
     if ( i_class == ELFCLASS32)
     {
         entry32 = static_cast<uint32_t>(ehdr.e_entry);
@@ -123,7 +123,7 @@ ElfMarlin::ElfMarlin(const char * path_to_elf, int log)
 
 bool  ElfMarlin::check()
 {
-    int c = i_class * type * machine;//  & i_data; cant find in libelf
+    int c = i_class * type * machine * i_data;
     if (i_class == ELFCLASS32)
     {
         c *= entry32;

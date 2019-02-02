@@ -25,12 +25,6 @@ if(NOT LIBELF_LIBRARY)
     return()
 endif()
 
-find_library(LIBBSD_LIBRARY bsd)
-if(NOT LIBBSD_LIBRARY)
-    message(SEND_ERROR "Failed to find libbsd")
-    return()
-endif()
-
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
@@ -38,5 +32,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
 add_executable(${PROJECT_NAME} ElfMarlin.cpp Marlin.cpp Marlin.hpp Main.cpp ElfMarlin.hpp Memory.cpp Memory.hpp)
 
-target_link_libraries(${PROJECT_NAME} ${LIBELF_LIBRARY} ${LIBBSD_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${LIBELF_LIBRARY} )
 

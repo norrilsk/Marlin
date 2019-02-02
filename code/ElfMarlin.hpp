@@ -8,10 +8,11 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include<unistd.h>
-#include<bsd/vis.h>
 #include <vector>
 
 #include"Memory.hpp"
+
+
 class ElfMarlin
 {
     /*
