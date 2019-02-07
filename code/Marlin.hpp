@@ -2,17 +2,20 @@
 #define MARLIN_MARLIN_H
 
 #include<string>
+
 #include"ElfMarlin.hpp"
-#include"Memory.hpp"
+#include"MMU.hpp"
+#include"Config.hpp"
 class Marlin
 {
 private:
-    Memory memory;
+    Config config;
+    MMU mmu;
     bool log = false;
     uint64_t pc;
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
 public:
-    explicit Marlin( std::string , bool log = false );
+    explicit Marlin( std::string , Config );
     ~Marlin() = default;
     
 };

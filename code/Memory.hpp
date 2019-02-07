@@ -5,23 +5,19 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
+
+#include "Config.hpp"
 class Memory
 {
 private:
-    
+    Config config;
     uint64_t size =0;// total memory size in bytes
-    std::vector<std::vector<char>> memory; //void* because memory shouldn't know about data type
-    std::vector<uint64_t> block_sizes;
-    std::vector<uint64_t> v_addresses;
-    std::vector<uint64_t> p_addresses;
-    std::vector<uint64_t> flags;
+    std::vector<char> memory;
 public:
     Memory(){};
+    Memory(Config config);
     ~Memory() = default;
-    void upload_v(void* data, uint64_t vadres, uint64_t flags, uint64_t num_bytes,
-        uint64_t num_bytes_in_mem); // upload by virt address. use only for elf!!
-    void upload_v(void* data, uint64_t vadres, uint64_t flags, uint64_t num_bytes);
-    
+    void upload(void* data, uint64_t addres, uint64_t num_bytes);
 };
 
 #endif //MARLIN_MEMORY_HPP

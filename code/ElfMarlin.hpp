@@ -10,7 +10,7 @@
 #include<unistd.h>
 #include <vector>
 
-#include"Memory.hpp"
+#include"MMU.hpp"
 
 
 class ElfMarlin
@@ -52,7 +52,7 @@ public:
     uint32_t get_entry32() { return entry32;}
     uint64_t get_entry64() { return entry64;}
     
-    void load (Memory &mem);
+    void load (MMU &mmu);
     bool check();
     
 };

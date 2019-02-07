@@ -30,7 +30,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
-add_executable(${PROJECT_NAME} ElfMarlin.cpp Marlin.cpp Marlin.hpp Main.cpp ElfMarlin.hpp Memory.cpp Memory.hpp)
+add_executable(${PROJECT_NAME} ElfMarlin.cpp Marlin.cpp Marlin.hpp Main.cpp ElfMarlin.hpp Memory.cpp Memory.hpp MMU.cpp MMU.hpp Config.cpp Config.hpp)
 
 target_link_libraries(${PROJECT_NAME} ${LIBELF_LIBRARY} )
 

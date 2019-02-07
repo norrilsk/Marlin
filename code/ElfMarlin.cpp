@@ -139,7 +139,7 @@ bool  ElfMarlin::check()
     return c != 0;
     
 }
-void ElfMarlin::load(Memory &mem)
+void ElfMarlin::load(MMU &mmu)
 {
     size_t phdrnum;
     if  (elf_getphdrnum(e, &phdrnum))
@@ -180,9 +180,7 @@ void ElfMarlin::load(Memory &mem)
             throw 63;
         }
         
-        mem.upload_v(&buf[0], vaddress,flags,fsize,msize);
-        
-        
+        mmu.upload_segment_to_mem(&buf[0], vaddress,flags,fsize,msize);
         
     }
 }
