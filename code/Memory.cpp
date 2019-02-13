@@ -2,9 +2,9 @@
 
 
 
-Memory::Memory( Config config ): config(config)
+Memory::Memory( Config& config ): config(config), log(config.get_log_ref())
 {
-    size = config.GetMemSize();
+    size = config.get_mem_size();
     memory.resize(size);
 }
 

@@ -7,13 +7,14 @@
 class MMU
 {
 private:
-    Config config;
+    Config& config;
     Memory memory;
 public:
-    int upload_segment_to_mem(void* data,uint64_t addres, uint64_t flags,uint64_t data_size, uint64_t data_size_in_mem);
-    MMU(Config config);
-    MMU(){};
-    ~MMU(){};
+    int upload_segment_to_mem(void* data,uint64_t addres, uint64_t flags,\
+        uint64_t data_size, uint64_t data_size_in_mem);
+    explicit MMU(Config& config);
+//    MMU(){};
+    ~MMU() = default ;
 };
 
 #endif //MARLIN_MMU_HPP

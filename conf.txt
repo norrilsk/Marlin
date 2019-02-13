@@ -1,0 +1,4 @@
+Page size : 4096
+Memory size : 4194304
+Whole log : true
+Log path : ../../MarlinLog.txt

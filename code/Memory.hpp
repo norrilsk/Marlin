@@ -7,15 +7,17 @@
 #include <cstring>
 
 #include "Config.hpp"
+#include "Log.hpp"
 class Memory
 {
 private:
-    Config config;
+    Config& config;
+    Log::Loger& log;
     uint64_t size =0;// total memory size in bytes
     std::vector<char> memory;
 public:
-    Memory(){};
-    Memory(Config config);
+    //Memory(){};
+    explicit Memory(Config& config);
     ~Memory() = default;
     void upload(void* data, uint64_t addres, uint64_t num_bytes);
 };

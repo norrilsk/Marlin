@@ -4,9 +4,9 @@
 #include<err.h>
 #include<fcntl.h>
 #include<gelf.h>
-#include<stdio.h>
-#include<stdint.h>
-#include<stdlib.h>
+#include<cstdio>
+#include<cstdint>
+#include<cstdlib>
 #include<unistd.h>
 #include <vector>
 

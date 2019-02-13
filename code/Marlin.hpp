@@ -10,12 +10,12 @@ class Marlin
 {
 private:
     Config config;
+    Log::Loger& log;
     MMU mmu;
-    bool log = false;
     uint64_t pc;
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
 public:
-    explicit Marlin( std::string , Config );
+    explicit Marlin( std::string  path_to_test, std::string path_to_conf );
     ~Marlin() = default;
     
 };
