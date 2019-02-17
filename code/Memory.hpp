@@ -19,7 +19,8 @@ public:
     //Memory(){};
     explicit Memory(Config& config);
     ~Memory() = default;
-    void upload(void* data, uint64_t addres, uint64_t num_bytes);
+    void read(void* data, uint64_t addres, uint64_t num_bytes);
+    void write(void* data, uint64_t address, uint64_t num_bytes);
 };
 
 #endif //MARLIN_MEMORY_HPP
