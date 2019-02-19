@@ -84,7 +84,6 @@ class Oper
 {
     OperType type = OPER_TYPE_NONE;
     OperName name = OPER_NAME_NONE;
-
 public:
     uint32_t opcode;
     
@@ -99,13 +98,18 @@ public:
 class OperR : public Oper
 {
 private:
-
-public:
     uint32_t funct3;
     uint32_t funct7;
     Register rs1;
     Register rs2;
     Register rd;
+    friend class Decoder;
+public:
+    uint32_t get_f3(){return funct3;}
+    uint32_t get_f7(){return funct7;}
+    Register get_rs1(){return rs1;};
+    Register get_rs2(){return rs2;};
+    Register get_rd(){return rd;};
     explicit OperR(OperName name);
     OperR(){};
     ~OperR() {};
@@ -114,11 +118,17 @@ public:
 
 class OperI: public Oper
 {
-public:
+private:
     uint32_t funct3;
     uint32_t imm;
     Register rs1;
     Register rd;
+    friend class Decoder;
+public:
+    uint32_t get_imm(){return imm;}
+    uint32_t get_f3() { return funct3; }
+    Register get_rs1() { return rs1; };
+    Register get_rd() { return rd; };
     explicit OperI(OperName name);
     OperI(){};
     ~OperI(){};
@@ -126,22 +136,34 @@ public:
 
 class OperS: public Oper
 {
-public:
+private:
     uint32_t funct3;
     uint32_t imm;
     Register rs1;
     Register rs2;
+    friend class Decoder;
+public:
+    uint32_t get_imm() { return imm; }
+    uint32_t get_f3() { return funct3; }
+    Register get_rs1() { return rs1; }
+    Register get_rs2() { return rs2; }
     explicit OperS(OperName name);
     OperS(){};
     ~OperS(){};
 };
 class OperB: public Oper
 {
-public:
+private:
     uint32_t funct3;
     uint32_t imm;
     Register rs1;
     Register rs2;
+    friend class Decoder;
+public:
+    uint32_t get_imm() { return imm; }
+    uint32_t get_f3() { return funct3; }
+    Register get_rs1() { return rs1; }
+    Register get_rs2() { return rs2; }
     explicit OperB(OperName name);
     OperB(){};
     ~OperB(){};
@@ -149,9 +171,13 @@ public:
 
 class OperU: public Oper
 {
-public:
+private:
     uint32_t imm;
     Register rd;
+    friend class Decoder;
+public:
+    Register get_rd() { return rd; };
+    uint32_t get_imm() { return imm; }
     explicit OperU(OperName name);
     OperU(){};
     ~OperU(){};
@@ -159,9 +185,13 @@ public:
 
 class OperJ: public Oper
 {
-public:
+private:
     uint32_t imm;
     Register rd;
+    friend class Decoder;
+public:
+    uint32_t get_imm() { return imm; }
+    Register get_rd() { return rd; };
     explicit OperJ(OperName name);
     OperJ(){};
     ~OperJ(){};

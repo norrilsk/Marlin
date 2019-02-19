@@ -1,5 +1,11 @@
 #include "Marlin.hpp"
 #include<iostream>
+
+Regfile::Regfile(uint32_t num) : num_regs(num)
+{
+    regs.resize(num);
+}
+
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()), mmu(config)
 {
     
@@ -20,30 +26,11 @@ void Marlin::run()
     {
         //Fetch
         uint32_t instr;
-        Oper oper;
         mmu.read_from_mem(&instr,pc,1);
         //decode
-        //oper = decode(instr);
+        Oper* oper;
+        oper = Decoder::decode32i(instr);
         clocks++;
         break;
     }
-}
-
-Oper Marlin::decode(uint32_t instr)
-{
-    Oper* op;
-    op = new(Oper);
-    uint32_t opcode = instr & 0b1111111;
-    switch (opcode)
-    {
-        case 0b0110111:
-            (void)op;//  op= Oper//ты хотел перенести это в Oper как насчет дружественного класса decoder ?
-            
-            
-            break;
-        default:
-            throw -1;
-    
-    }
-    return *op;
 }
