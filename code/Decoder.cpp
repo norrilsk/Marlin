@@ -17,12 +17,37 @@ Oper* Decoder::decode32i(uint32_t instr)
     find_name_and_type(opcode, funct3, funct7);
     switch (type)
     {
-    default:
+    case OPER_TYPE_R:
+        op_r = new OperR(name);
+        op = dynamic_cast<Oper*>(op_r);
         break;
+    case OPER_TYPE_I:
+        op_i = new OperI(name);
+        op = dynamic_cast<Oper*>(op_i);
+        break;
+    case OPER_TYPE_S:
+        op_s = new OperS(name);
+        op = dynamic_cast<Oper*>(op_s);
+        break;
+    case OPER_TYPE_B:
+        op_b = new OperB(name);
+        op = dynamic_cast<Oper*>(op_b);
+        break;
+    case OPER_TYPE_U:
+        op_u = new OperU(name);
+        op = dynamic_cast<Oper*>(op_u);
+        break;
+    case OPER_TYPE_J:
+        op_j = new OperJ(name);
+        op = dynamic_cast<Oper*>(op_j);
+        break;
+    default:
+        print_and_raise_error(instr);
     }
 
+    op->calc_imm(instr);
 
-    
+    return op;
 }
 void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t funct7)
 {
@@ -246,4 +271,10 @@ void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t func
 
     }
 
+}
+void Decoder::print_and_raise_error(uint32_t instr)
+{
+    Log::Loger& log  = config.get_log_ref();
+    log << Log::err << "Decoder error while decoding " << std::to_string(instr) <<Log::endl;
+    throw -1;
 }

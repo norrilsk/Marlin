@@ -15,7 +15,7 @@ private:
     void find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t funct7);
     void print_and_raise_error(uint32_t instr);
 public:
-    Decoder(Config& config):config(config){};
+    explicit  Decoder(Config& config):config(config){};
     ~Decoder(){};
     Oper* decode32i(uint32_t instr);
 

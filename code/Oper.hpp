@@ -89,10 +89,10 @@ public:
     
     Oper(){};
     Oper(OperName name, OperType type);
-    
+    virtual void calc_imm(uint32_t instr);
     OperName get_name(){ return name;}
     OperType get_type(){ return type;}
-    ~Oper(){};
+    virtual ~Oper(){};
 };
 
 class OperR : public Oper
@@ -125,6 +125,7 @@ private:
     Register rd;
     friend class Decoder;
 public:
+    void calc_imm(uint32_t instr);
     uint32_t get_imm(){return imm;}
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; };
@@ -143,6 +144,7 @@ private:
     Register rs2;
     friend class Decoder;
 public:
+    void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; }
@@ -160,6 +162,7 @@ private:
     Register rs2;
     friend class Decoder;
 public:
+    void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; }
@@ -176,6 +179,7 @@ private:
     Register rd;
     friend class Decoder;
 public:
+    void calc_imm(uint32_t instr);
     Register get_rd() { return rd; };
     uint32_t get_imm() { return imm; }
     explicit OperU(OperName name);
@@ -190,6 +194,7 @@ private:
     Register rd;
     friend class Decoder;
 public:
+    void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     Register get_rd() { return rd; };
     explicit OperJ(OperName name);

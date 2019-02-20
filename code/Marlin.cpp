@@ -6,7 +6,7 @@ Regfile::Regfile(uint32_t num) : num_regs(num)
     regs.resize(num);
 }
 
-Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()), mmu(config)
+Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()), mmu(config),decoder(config)
 {
     
     ElfMarlin elf(path_to_data.c_str(),  config.get_log_marlin());
@@ -29,7 +29,7 @@ void Marlin::run()
         mmu.read_from_mem(&instr,pc,1);
         //decode
         Oper* oper;
-        oper = Decoder::decode32i(instr);
+        oper = decoder.decode32i(instr);
         clocks++;
         break;
     }
