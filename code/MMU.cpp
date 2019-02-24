@@ -11,6 +11,17 @@ int MMU::upload_segment_to_mem(void* data,uint64_t addres, uint64_t flags,uint64
      */
     (void)flags;
     (void)data_size_in_mem;
-    memory.upload(data,addres,data_size);
+    memory.write(data,addres,data_size);
     return 1;
+}
+
+int MMU::read_from_mem(void *data, uint64_t address, uint64_t data_size)
+{
+    memory.read(data,address,data_size);
+    return 0;
+}
+int MMU::write_to_mem(void *data, uint64_t address, uint64_t data_size)
+{
+    memory.write(data,address,data_size);
+    return 0;
 }

@@ -46,6 +46,11 @@ void Config::read_config_file(std::string path)
             memory_size = std::stol(value);
             continue;
         }
+        if (!name.compare(0,18,"Register file size"))
+        {
+            num_regs = std::stol(value);
+            continue;
+        }
         if (!name.compare(0,9,"Whole log"))
         {
             if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
