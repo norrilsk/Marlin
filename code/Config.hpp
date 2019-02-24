@@ -9,12 +9,14 @@ private:
     uint64_t page_size = 0;
     uint64_t memory_size = page_size* 1024;
     std::string path_to_log;
+    uint64_t  num_regs;
     bool marlin_log = true;
     Log::Loger log;
    
 public:
     uint64_t get_mem_size(){ return memory_size;};
     uint64_t get_page_size(){ return page_size;};
+    uint64_t get_num_regs(){return num_regs;};
     bool get_log_marlin() {return marlin_log;};
     Log::Loger& get_log_ref() {return log;};
     void read_config_file(std::string path);

@@ -4,7 +4,7 @@
 #include "Oper.hpp"
 #include "Log.hpp"
 #include "Config.hpp"
-
+class Regfile;
 class Decoder
 {
 private:
@@ -17,7 +17,7 @@ private:
 public:
     explicit  Decoder(Config& config):config(config){};
     ~Decoder(){};
-    Oper* decode32i(uint32_t instr);
+    Oper* decode32i(uint32_t instr, Regfile& reg);
 
 };
 

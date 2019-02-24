@@ -1,5 +1,6 @@
 #include"Decoder.hpp"
-Oper* Decoder::decode32i(uint32_t instr)
+#include "Marlin.hpp"
+Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
 {
     this->instr = instr;
     Oper* op;
@@ -14,32 +15,47 @@ Oper* Decoder::decode32i(uint32_t instr)
     uint32_t funct3 = (instr >> 12) & 0b0111;
     uint32_t funct7 = (instr >> 25) &0b01111111;
     uint32_t opcode = instr & 0b1111111;
+    uint32_t num_rs1 =(instr >> 15)&0b011111;
+    uint32_t num_rs2 = (instr >> 20) &0b011111;
+    uint32_t num_rd = (instr >> 20) &0b011111;
     find_name_and_type(opcode, funct3, funct7);
+   
     switch (type)
     {
     case OPER_TYPE_R:
         op_r = new OperR(name);
+        op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
+        op_r->rs1 = reg.get_reg(num_rs1);
+        op_r->rs2 = reg.get_reg(num_rs2);
         op = dynamic_cast<Oper*>(op_r);
         break;
     case OPER_TYPE_I:
         op_i = new OperI(name);
         op = dynamic_cast<Oper*>(op_i);
+        op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
+        op_i->rs1 = reg.get_reg(num_rs1);
         break;
     case OPER_TYPE_S:
         op_s = new OperS(name);
         op = dynamic_cast<Oper*>(op_s);
+        op_s->rs1 = reg.get_reg(num_rs1);
+        op_s->rs2 = reg.get_reg(num_rs2);
         break;
     case OPER_TYPE_B:
         op_b = new OperB(name);
         op = dynamic_cast<Oper*>(op_b);
+        op_b->rs1 = reg.get_reg(num_rs1);
+        op_b->rs2 = reg.get_reg(num_rs2);
         break;
     case OPER_TYPE_U:
         op_u = new OperU(name);
         op = dynamic_cast<Oper*>(op_u);
+        op_u->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
     case OPER_TYPE_J:
         op_j = new OperJ(name);
         op = dynamic_cast<Oper*>(op_j);
+        op_j->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
     default:
         print_and_raise_error(instr);
@@ -56,11 +72,11 @@ void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t func
         //RTYPE
     case 0b0110111://LUI
         name = OPER_NAME_LUI;
-        type = OPER_TYPE_R;
+        type = OPER_TYPE_U;
         break;
     case 0b0010111://AUIPC
         name = OPER_NAME_AUIPC;
-        type = OPER_TYPE_R;
+        type = OPER_TYPE_U;
         break;
     case 0b1101111:
         name = OPER_NAME_JAL;
@@ -141,8 +157,8 @@ void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t func
     case  0b0010011:
         switch (funct3)
         {
-        case 0b001:
-        case 0b101: //TODO: add this later
+        case 0b001: //SLLI
+        case 0b101: //SRLI SRAI TODO: add this later
             print_and_raise_error(instr);
         case 0b000:
             type = OPER_TYPE_I;

@@ -1,6 +1,7 @@
 #ifndef MARLIN_OPER_HPP
 #define MARLIN_OPER_HPP
 #include <cstdint>
+
 enum OperType
 {
     OPER_TYPE_R,

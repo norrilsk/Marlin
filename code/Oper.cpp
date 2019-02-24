@@ -36,6 +36,7 @@ OperJ::OperJ(OperName name) : Oper(name, OPER_TYPE_J)
 
 void Oper::calc_imm(uint32_t instr)
 {
+    (void)instr;
 }
 void OperI::calc_imm(uint32_t instr)
 {
@@ -89,7 +90,7 @@ void OperB::calc_imm(uint32_t instr)
 }
 void OperU::calc_imm(uint32_t instr)
 {
-    uint32_t s1 = 0;
+    
     imm = instr & 0b11111111111111111111000000000000;
 }
 
