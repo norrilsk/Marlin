@@ -1,6 +1,11 @@
 #ifndef MARLIN_OPER_HPP
 #define MARLIN_OPER_HPP
 #include <cstdint>
+#include <iostream>
+#include "Cell.hpp"
+#define Register uint32_t
+
+
 
 enum OperType
 {
@@ -66,7 +71,7 @@ enum OperName
 };
 
 
-class Register
+/*class Register
 {
 private:
     uint32_t value;
@@ -74,23 +79,21 @@ public:
     uint32_t get_value(){return value;}
     Register(){};
     ~Register(){};
-
-
-
-};
-
+};*/
 
 
 class Oper
 {
     OperType type = OPER_TYPE_NONE;
     OperName name = OPER_NAME_NONE;
+    void(*main_executor)(Oper*, DE*) = nullptr;
 public:
     uint32_t opcode;
     
     Oper(){};
     Oper(OperName name, OperType type);
     virtual void calc_imm(uint32_t instr);
+    void execute(DE*);
     OperName get_name(){ return name;}
     OperType get_type(){ return type;}
     virtual ~Oper(){};
@@ -110,7 +113,8 @@ public:
     uint32_t get_f7(){return funct7;}
     Register get_rs1(){return rs1;};
     Register get_rs2(){return rs2;};
-    Register get_rd(){return rd;};
+    Register get_rd() { return rd; };
+    void set_rd(Register rd) { this->rd = rd; };
     explicit OperR(OperName name);
     OperR(){};
     ~OperR() {};
@@ -131,6 +135,7 @@ public:
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; };
     Register get_rd() { return rd; };
+    void set_rd(Register rd) { this->rd = rd; };
     explicit OperI(OperName name);
     OperI(){};
     ~OperI(){};
@@ -182,6 +187,7 @@ private:
 public:
     void calc_imm(uint32_t instr);
     Register get_rd() { return rd; };
+    void set_rd(Register rd){this->rd = rd;};
     uint32_t get_imm() { return imm; }
     explicit OperU(OperName name);
     OperU(){};
@@ -198,6 +204,7 @@ public:
     void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     Register get_rd() { return rd; };
+    void set_rd(Register rd) { this->rd = rd; };
     explicit OperJ(OperName name);
     OperJ(){};
     ~OperJ(){};
