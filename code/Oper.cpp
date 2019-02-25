@@ -123,11 +123,3 @@ void OperJ::calc_imm(uint32_t instr)
     imm = s1 +s2 +s3 +s4 +s5;
 }
 
-void MainInstrExecutorAUIPC(Oper* op, DE* de)
-{
-    OperU* oper = static_cast<OperU*>(op);
-    Register rd = oper->get_rd;
-    uint32_t imm = oper->get_imm;
-    rd = imm + de->pc;
-    oper->set_rd(rd);
-}

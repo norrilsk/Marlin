@@ -71,15 +71,10 @@ enum OperName
 };
 
 
-/*class Register
+namespace Executors
 {
-private:
-    uint32_t value;
-public:
-    uint32_t get_value(){return value;}
-    Register(){};
-    ~Register(){};
-};*/
+  void MainInstrExecutorAUIPC(Oper *op, DE *de);
+}
 
 
 class Oper
@@ -87,6 +82,7 @@ class Oper
     OperType type = OPER_TYPE_NONE;
     OperName name = OPER_NAME_NONE;
     void(*main_executor)(Oper*, DE*) = nullptr;
+    friend class Decoder;
 public:
     uint32_t opcode;
     
@@ -209,8 +205,6 @@ public:
     OperJ(){};
     ~OperJ(){};
 };
-
-
 
 
 

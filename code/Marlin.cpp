@@ -43,9 +43,11 @@ void Marlin::run()
     {
         fetch();
         decode();
+        execute();
         
         fd_cell.update();
         de_cell.update();
+        em_cell.update();
         pc+=4;
         clocks++;
     }
@@ -79,6 +81,15 @@ void Marlin::execute()
 {
     DE* de = de_cell.get_load_ref();
     EM* em = em_cell.get_store_ref();
+    em->is_stall = de->is_stall;
+    if(de->is_stall)
+    {
+        return;
+    }
     Oper* oper = de->op;
     oper->execute(de);
+    
+    em->pc = de->pc;
+    em->op = de->op;
+    em->is_stall = de->is_stall;
 }

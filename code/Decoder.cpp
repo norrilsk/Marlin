@@ -12,13 +12,14 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     OperJ* op_j;
     name = OPER_NAME_NONE;
     type=  OPER_TYPE_NONE;
+    executor = nullptr;
     uint32_t funct3 = (instr >> 12) & 0b0111;
     uint32_t funct7 = (instr >> 25) &0b01111111;
     uint32_t opcode = instr & 0b1111111;
     uint32_t num_rs1 =(instr >> 15)&0b011111;
     uint32_t num_rs2 = (instr >> 20) &0b011111;
     uint32_t num_rd = (instr >> 20) &0b011111;
-    find_name_and_type(opcode, funct3, funct7);
+    recognize_oper(opcode, funct3, funct7);
    
     switch (type)
     {
@@ -60,12 +61,12 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     default:
         print_and_raise_error(instr);
     }
-
-    op->calc_imm(instr);
+    op->main_executor = executor;
+    op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
 }
-void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t funct7)
+void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
 {
     switch (opcode)
     {
@@ -77,6 +78,7 @@ void Decoder::find_name_and_type(uint32_t opcode, uint32_t funct3, uint32_t func
     case 0b0010111://AUIPC
         name = OPER_NAME_AUIPC;
         type = OPER_TYPE_U;
+        executor = &(Executors::MainInstrExecutorAUIPC);
         break;
     case 0b1101111:
         name = OPER_NAME_JAL;
