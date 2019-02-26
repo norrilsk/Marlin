@@ -2,6 +2,28 @@
 #define MARLIN_CELL_HPP
 #include <stdexcept>
 
+//predecl
+class Oper;
+
+struct FD //Fetch-Decode
+{
+    bool is_stall = true;
+    uint32_t pc = 0;
+    uint32_t instr = 0;
+};
+struct DE //Decode -Execute
+{
+    bool is_stall = true;
+    uint32_t pc = 0;
+    Oper * op = nullptr;
+};
+struct EM //Execute - memory access
+{
+    bool is_stall = true;
+    uint32_t pc = 0;
+    Oper * op = nullptr;
+};
+
 template <typename T>
 class Cell
 {
@@ -10,6 +32,8 @@ private:
     T* phase2;
 public:
     void update();
+    T* get_store_ref(){return phase1;}
+    T* get_load_ref(){return phase2;}
     void store(T* t);
     void load(T* t);
     Cell();

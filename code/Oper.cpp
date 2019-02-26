@@ -34,6 +34,19 @@ OperJ::OperJ(OperName name) : Oper(name, OPER_TYPE_J)
 
 }
 
+void Oper::execute(DE* de)
+{
+    if (this->main_executor)
+    {
+        main_executor(this, de);
+    }
+    else
+    {
+        std::cerr << "no executor for operation " << this->name;
+        throw -1;
+    }
+}
+
 void Oper::calc_imm(uint32_t instr)
 {
     (void)instr;
@@ -109,3 +122,4 @@ void OperJ::calc_imm(uint32_t instr)
     s5 = ((instr >> 21) & 0b1111) << 1;
     imm = s1 +s2 +s3 +s4 +s5;
 }
+

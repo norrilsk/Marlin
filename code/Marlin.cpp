@@ -43,9 +43,11 @@ void Marlin::run()
     {
         fetch();
         decode();
+        execute();
         
         fd_cell.update();
         de_cell.update();
+        em_cell.update();
         pc+=4;
         clocks++;
     }
@@ -53,27 +55,41 @@ void Marlin::run()
 
 void Marlin::fetch()
 {
-    FD fd;
-    fd.pc = static_cast<uint32_t>(pc);
+    FD* fd = fd_cell.get_store_ref();
     uint32_t  instr;
     mmu.read_from_mem(&instr,pc,4);
-    fd.instr = instr;
-    fd.is_stall = false;
-    fd_cell.store(&fd);
+    
+    fd->pc = static_cast<uint32_t>(pc);
+    fd->instr = instr;
+    fd->is_stall = false;
 }
 void Marlin::decode()
 {
-    FD fd;
-    DE de;
-    fd_cell.load(&fd);
-    de.is_stall = fd.is_stall;
-    if(fd.is_stall)
+    FD* fd = fd_cell.get_load_ref();
+    DE* de = de_cell.get_store_ref();
+    de->is_stall = fd->is_stall;
+    if(fd->is_stall)
     {
-        de_cell.store(&de);
         return;
     }
     Oper* op;
-    op = decoder.decode32i(fd.instr, regfile);
-    de.op = op;
-    de_cell.store(&de);
+    op = decoder.decode32i(fd->instr, regfile);
+    de->op = op;
+    de->pc = fd->pc;
+}
+void Marlin::execute()
+{
+    DE* de = de_cell.get_load_ref();
+    EM* em = em_cell.get_store_ref();
+    em->is_stall = de->is_stall;
+    if(de->is_stall)
+    {
+        return;
+    }
+    Oper* oper = de->op;
+    oper->execute(de);
+    
+    em->pc = de->pc;
+    em->op = de->op;
+    em->is_stall = de->is_stall;
 }

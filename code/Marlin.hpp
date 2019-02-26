@@ -31,17 +31,6 @@ public:
     
 };
 
-struct FD //Fetch-Decode
-{
-    bool is_stall = true;
-    uint32_t pc = 0;
-    uint32_t instr = 0;
-};
-struct DE //Decode -Execute
-{
-    bool is_stall = true;
-    Oper* op;
-};
 
 class Marlin
 {
@@ -53,12 +42,14 @@ private:
     Regfile regfile;
     uint64_t pc;
     Cell <FD> fd_cell; //fetch-decode cell
-    Cell <DE> de_cell;
+    Cell <DE> de_cell; //decode-execute cell
+    Cell <EM> em_cell; //execute-memory access cell
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
     uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;
     void fetch();
     void decode();
+    void execute();
 public:
     void run();
     
