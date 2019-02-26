@@ -24,16 +24,24 @@ struct EM //Execute - memory access
     Oper * op = nullptr;
 };
 
+struct MW
+{
+    bool is_stall = true;
+    uint32_t pc =0;
+    Oper* op = nullptr;
+};
+
 template <typename T>
 class Cell
 {
 private:
     T* phase1;
     T* phase2;
+    friend class HazartUnit;
 public:
     void update();
-    T* get_store_ref(){return phase1;}
-    T* get_load_ref(){return phase2;}
+    T* get_store_ptr(){return phase1;}
+    T* get_load_ptr(){return phase2;}
     void store(T* t);
     void load(T* t);
     Cell();

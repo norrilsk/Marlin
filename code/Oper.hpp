@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <iostream>
 #include "Cell.hpp"
-#define Register uint32_t
+
 
 
 
@@ -71,11 +71,21 @@ enum OperName
 };
 
 
-namespace Executors
+class Register
 {
-  void MainInstrExecutorAUIPC(Oper *op, DE *de);
-}
+private:
+    uint32_t value = 0;
+    uint32_t name;
+    friend  class Regfile;
+public:
+    uint32_t get_value() { return value; }
+    void set_value(uint32_t val){value = val;}
+    uint32_t get_name() {return name;}
+    Register() {};
+    ~Register() {};
 
+
+};
 
 class Oper
 {
@@ -89,6 +99,13 @@ public:
     Oper(){};
     Oper(OperName name, OperType type);
     virtual void calc_imm(uint32_t instr);
+    virtual uint32_t get_imm(){throw 1;}
+    virtual uint32_t get_f3() { throw 1; }
+    virtual uint32_t get_f7() { throw 1; }
+    virtual Register get_rs1() { throw 1; };
+    virtual Register get_rs2() { throw 1; };
+    virtual Register get_rd() {throw 1; };
+    virtual Register& get_rd_ref() { throw 1; };
     void execute(DE*);
     OperName get_name(){ return name;}
     OperType get_type(){ return type;}
@@ -110,6 +127,7 @@ public:
     Register get_rs1(){return rs1;};
     Register get_rs2(){return rs2;};
     Register get_rd() { return rd; };
+    Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
     explicit OperR(OperName name);
     OperR(){};
@@ -131,6 +149,7 @@ public:
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; };
     Register get_rd() { return rd; };
+    Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
     explicit OperI(OperName name);
     OperI(){};
@@ -183,6 +202,7 @@ private:
 public:
     void calc_imm(uint32_t instr);
     Register get_rd() { return rd; };
+    Register& get_rd_ref() { return rd; };
     void set_rd(Register rd){this->rd = rd;};
     uint32_t get_imm() { return imm; }
     explicit OperU(OperName name);
@@ -200,6 +220,7 @@ public:
     void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     Register get_rd() { return rd; };
+    Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
     explicit OperJ(OperName name);
     OperJ(){};

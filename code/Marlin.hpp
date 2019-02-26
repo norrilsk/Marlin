@@ -9,6 +9,7 @@
 #include"Config.hpp"
 #include"Decoder.hpp"
 #include "Cell.hpp"
+#include "HazartUnit.hpp"
 enum AccessType
 {
     ACCESS_TYPE_READ,
@@ -37,13 +38,16 @@ class Marlin
 private:
     Config config;
     Log::Loger& log;
-    Decoder decoder;
     MMU mmu;
     Regfile regfile;
     uint64_t pc;
     Cell <FD> fd_cell; //fetch-decode cell
     Cell <DE> de_cell; //decode-execute cell
     Cell <EM> em_cell; //execute-memory access cell
+    Cell <MW> mw_cell; //meory access - write back cell
+    HazartUnit hazartUnit;
+    Decoder decoder;
+
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
     uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;

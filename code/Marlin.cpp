@@ -3,9 +3,13 @@
 
 Regfile::Regfile(Config& config) : config(config)
 {
-    auto num = static_cast<uint32_t >(config.get_num_regs());
-    dirtiness.resize(num ,0);
-    regs.resize(num);
+    num_regs = static_cast<uint32_t >(config.get_num_regs());
+    dirtiness.resize(num_regs,0);
+    regs.resize(num_regs);
+    for (uint32_t i = 0; i < num_regs; i++)
+    {
+        regs[i].name = i;
+    }
 }
 Register Regfile::get_reg(uint32_t num, AccessType acc)
 {
@@ -22,7 +26,7 @@ Register& Regfile::get_reg_ref(uint32_t num, AccessType acc)
 }
 
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
-                    decoder(config),mmu(config), regfile(config)
+                   mmu(config), regfile(config), hazartUnit(config,fd_cell,de_cell,em_cell,mw_cell), decoder(config,hazartUnit)
 {
     
     ElfMarlin elf(path_to_data.c_str(),  config.get_log_marlin());
@@ -41,9 +45,9 @@ void Marlin::run()
 {
     while(1)
     {
-        fetch();
-        decode();
         execute();
+        decode();
+        fetch();
         
         fd_cell.update();
         de_cell.update();
@@ -55,7 +59,7 @@ void Marlin::run()
 
 void Marlin::fetch()
 {
-    FD* fd = fd_cell.get_store_ref();
+    FD* fd = fd_cell.get_store_ptr();
     uint32_t  instr;
     mmu.read_from_mem(&instr,pc,4);
     
@@ -65,8 +69,8 @@ void Marlin::fetch()
 }
 void Marlin::decode()
 {
-    FD* fd = fd_cell.get_load_ref();
-    DE* de = de_cell.get_store_ref();
+    FD* fd = fd_cell.get_load_ptr();
+    DE* de = de_cell.get_store_ptr();
     de->is_stall = fd->is_stall;
     if(fd->is_stall)
     {
@@ -79,8 +83,8 @@ void Marlin::decode()
 }
 void Marlin::execute()
 {
-    DE* de = de_cell.get_load_ref();
-    EM* em = em_cell.get_store_ref();
+    DE* de = de_cell.get_load_ptr();
+    EM* em = em_cell.get_store_ptr();
     em->is_stall = de->is_stall;
     if(de->is_stall)
     {

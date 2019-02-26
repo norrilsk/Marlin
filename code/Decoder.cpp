@@ -26,27 +26,77 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     case OPER_TYPE_R:
         op_r = new OperR(name);
         op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
-        op_r->rs1 = reg.get_reg(num_rs1);
-        op_r->rs2 = reg.get_reg(num_rs2);
+        if (reg.is_dirty(num_rs1))
+        {
+            op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+        }
+        else
+        {
+            op_r->rs1 = reg.get_reg(num_rs1);
+        }
+        
+        if (reg.is_dirty(num_rs2))
+        {
+            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+        }
+        else
+        {
+            op_r->rs2 = reg.get_reg(num_rs2);
+        }
         op = dynamic_cast<Oper*>(op_r);
         break;
     case OPER_TYPE_I:
         op_i = new OperI(name);
         op = dynamic_cast<Oper*>(op_i);
         op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
-        op_i->rs1 = reg.get_reg(num_rs1);
+        if (reg.is_dirty(num_rs1))
+        {
+            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+        }
+        else
+        {
+            op_r->rs1 = reg.get_reg(num_rs1);
+        }
         break;
     case OPER_TYPE_S:
         op_s = new OperS(name);
         op = dynamic_cast<Oper*>(op_s);
-        op_s->rs1 = reg.get_reg(num_rs1);
-        op_s->rs2 = reg.get_reg(num_rs2);
+        if (reg.is_dirty(num_rs1))
+        {
+            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+        }
+        else
+        {
+            op_r->rs1 = reg.get_reg(num_rs1);
+        }
+        if (reg.is_dirty(num_rs2))
+        {
+            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+        }
+        else
+        {
+            op_r->rs2 = reg.get_reg(num_rs2);
+        }
         break;
     case OPER_TYPE_B:
         op_b = new OperB(name);
         op = dynamic_cast<Oper*>(op_b);
-        op_b->rs1 = reg.get_reg(num_rs1);
-        op_b->rs2 = reg.get_reg(num_rs2);
+        if (reg.is_dirty(num_rs1))
+        {
+            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+        }
+        else
+        {
+            op_r->rs1 = reg.get_reg(num_rs1);
+        }
+        if (reg.is_dirty(num_rs2))
+        {
+            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+        }
+        else
+        {
+            op_r->rs2 = reg.get_reg(num_rs2);
+        }
         break;
     case OPER_TYPE_U:
         op_u = new OperU(name);
@@ -61,7 +111,9 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     default:
         print_and_raise_error(instr);
     }
-    op->main_executor = executor;
+
+    op->main_executor = executor; // set function for execution
+
     op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
@@ -74,6 +126,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
     case 0b0110111://LUI
         name = OPER_NAME_LUI;
         type = OPER_TYPE_U;
+        executor = &(Executors::MainInstrExecutorLUI);
         break;
     case 0b0010111://AUIPC
         name = OPER_NAME_AUIPC;
@@ -165,26 +218,32 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         case 0b000:
             type = OPER_TYPE_I;
             name = OPER_NAME_ADDI;
+            executor = &(Executors::MainInstrExecutorAUIPC);
             break;
         case 0b010:
             type = OPER_TYPE_I;
             name = OPER_NAME_SLTI;
+            executor = &(Executors::MainInstrExecutorSLTI);
             break;
         case 0b011:
             type = OPER_TYPE_I;
             name = OPER_NAME_SLTIU;
+            executor = &(Executors::MainInstrExecutorSLTIU);
             break;
         case 0b100:
             type = OPER_TYPE_I;
             name = OPER_NAME_XORI;
+            executor = &(Executors::MainInstrExecutorXORI);
             break;
         case 0b110:
             type = OPER_TYPE_I;
             name = OPER_NAME_ORI;
+            executor = &(Executors::MainInstrExecutorORI);
             break;
         case 0b111:
             type = OPER_TYPE_I;
             name = OPER_NAME_ANDI;
+            executor = &(Executors::MainInstrExecutorANDI);
             break;
         default:
             print_and_raise_error(instr);
