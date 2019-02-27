@@ -11,19 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f8d676ad-61f6-4db7-96ef-8fc8a81e7d94" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/code/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/code/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Decoder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Decoder.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Executors.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Executors.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/HazartUnit.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/HazartUnit.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/HazartUnit.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/HazartUnit.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Log.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Log.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Log.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Log.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/MMU.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/MMU.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Marlin.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Marlin.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Marlin.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Marlin.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/Memory.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/code/Memory.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="f8d676ad-61f6-4db7-96ef-8fc8a81e7d94" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/code/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -159,30 +147,29 @@
       <option name="presentableId" value="Default" />
       <updated>1550413916316</updated>
       <workItem from="1550413920519" duration="3891000" />
-      <workItem from="1551220386903" duration="2799000" />
+      <workItem from="1551220386903" duration="3052000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6690000" />
+    <option name="totallyTimeSpent" value="6943000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.28554216" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.28554216" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
       <window_info anchor="bottom" id="Messages" order="8" weight="0.32891566" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32891566" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" />
       <window_info anchor="bottom" id="CMake" order="12" weight="0.32916668" />
