@@ -1,3 +1,5 @@
+#ifndef MARLIN_HAZARTUNIT_HPP
+#define MARLIN_HAZARTUNIT_HPP
 #include "Config.hpp"
 #include "Cell.hpp"
 #include "Oper.hpp"
@@ -18,4 +20,4 @@ public:
     Register hazart_in_decode(Register rs);
     ~HazartUnit();
 };
-
+#endif

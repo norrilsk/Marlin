@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Cell.hpp
+stdexcept
+-
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Config.hpp
+cstdint
+-
+Log.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Log.hpp
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/HazartUnit.cpp
+HazartUnit.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/HazartUnit.hpp
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/HazartUnit.hpp
+Config.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Config.hpp
+Cell.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Cell.hpp
+Oper.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Oper.hpp
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Log.hpp
+string
+-
+iostream
+-
+fstream
+-
+
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Oper.hpp
+cstdint
+-
+iostream
+-
+Cell.hpp
+/Users/ekaterina/Documents/intel/Project/Marlin/code/Cell.hpp
+

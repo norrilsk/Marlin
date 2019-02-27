@@ -4,7 +4,9 @@
 HazartUnit::HazartUnit(Config& config, Cell <FD>& fd_cell, Cell <DE>& de_cell, Cell <EM>& em_cell, Cell <MW>& mw_cell):
     config(config), fd_cell(fd_cell), de_cell(de_cell), em_cell(em_cell), mw_cell(mw_cell)
 {
-
+    (void)this->config.get_page_size();
+    (void)this->fd_cell.phase1;
+    (void)this->de_cell.phase1;
 }
 
 Register HazartUnit::hazart_in_decode(Register rs)

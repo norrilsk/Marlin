@@ -40,7 +40,7 @@ namespace Log
     const std::string def_path("../../MarlinLog.txt");
     class Loger
     {
-        PrintType type = PrintType::INFO;
+      //  PrintType type = PrintType::INFO;
         std::string path ;
         std::string mess;
         std::ofstream* stream = nullptr;

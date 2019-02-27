@@ -18,7 +18,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     uint32_t opcode = instr & 0b1111111;
     uint32_t num_rs1 =(instr >> 15)&0b011111;
     uint32_t num_rs2 = (instr >> 20) &0b011111;
-    uint32_t num_rd = (instr >> 20) &0b011111;
+    uint32_t num_rd = (instr >> 7) &0b011111;
     recognize_oper(opcode, funct3, funct7);
    
     switch (type)
@@ -51,11 +51,11 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         if (reg.is_dirty(num_rs1))
         {
-            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
         }
         else
         {
-            op_r->rs1 = reg.get_reg(num_rs1);
+            op_i->rs1 = reg.get_reg(num_rs1);
         }
         break;
     case OPER_TYPE_S:
@@ -63,19 +63,19 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_s);
         if (reg.is_dirty(num_rs1))
         {
-            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_s->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
         }
         else
         {
-            op_r->rs1 = reg.get_reg(num_rs1);
+            op_s->rs1 = reg.get_reg(num_rs1);
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
         }
         else
         {
-            op_r->rs2 = reg.get_reg(num_rs2);
+            op_s->rs2 = reg.get_reg(num_rs2);
         }
         break;
     case OPER_TYPE_B:
@@ -83,19 +83,19 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_b);
         if (reg.is_dirty(num_rs1))
         {
-            op_r->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_b->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
         }
         else
         {
-            op_r->rs1 = reg.get_reg(num_rs1);
+            op_b->rs1 = reg.get_reg(num_rs1);
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_b->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
         }
         else
         {
-            op_r->rs2 = reg.get_reg(num_rs2);
+            op_b->rs2 = reg.get_reg(num_rs2);
         }
         break;
     case OPER_TYPE_U:
@@ -109,6 +109,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op_j->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
     default:
+        op = new Oper;
         print_and_raise_error(instr);
     }
 

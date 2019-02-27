@@ -3,7 +3,7 @@
 
 Regfile::Regfile(Config& config) : config(config)
 {
-    num_regs = static_cast<uint32_t >(config.get_num_regs());
+    num_regs = static_cast<uint32_t >(this->config.get_num_regs());
     dirtiness.resize(num_regs,0);
     regs.resize(num_regs);
     for (uint32_t i = 0; i < num_regs; i++)

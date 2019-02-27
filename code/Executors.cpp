@@ -2,14 +2,14 @@
 void Executors::MainInstrExecutorAUIPC(Oper *op, DE *de)
 {
     OperU *oper = static_cast<OperU *>(op);
-    Register& rd = oper->get_rd();
+    Register& rd = oper->get_rd_ref();
     uint32_t imm = oper->get_imm();
     uint32_t val = imm+ de->pc;
     rd.set_value(val);
 }
 void Executors::MainInstrExecutorADDI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     OperI * oper = static_cast<OperI *>(op);
     uint32_t imm = oper->get_imm();
     Register rs1 = oper->get_rs1();
@@ -21,7 +21,7 @@ void Executors::MainInstrExecutorADDI(Oper *op, DE *de)
 
 void Executors::MainInstrExecutorSLTI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     uint32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
@@ -40,7 +40,7 @@ void Executors::MainInstrExecutorSLTI(Oper *op, DE *de)
 
 void Executors::MainInstrExecutorSLTIU(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     uint32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
@@ -59,7 +59,7 @@ void Executors::MainInstrExecutorSLTIU(Oper *op, DE *de)
 
 void Executors::MainInstrExecutorANDI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     uint32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
@@ -69,7 +69,7 @@ void Executors::MainInstrExecutorANDI(Oper *op, DE *de)
 }
 void Executors::MainInstrExecutorORI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     uint32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
@@ -79,7 +79,7 @@ void Executors::MainInstrExecutorORI(Oper *op, DE *de)
 }
 void Executors::MainInstrExecutorXORI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     uint32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
@@ -90,9 +90,9 @@ void Executors::MainInstrExecutorXORI(Oper *op, DE *de)
 
 void Executors::MainInstrExecutorLUI(Oper *op, DE *de)
 {
-    (void*)de;
+    (void)de;
     OperU *oper = static_cast<OperU *>(op);
-    Register& rd = oper->get_rd();
+    Register& rd = oper->get_rd_ref();
     uint32_t imm = oper->get_imm();
     uint32_t val = imm ;
     rd.set_value(val);

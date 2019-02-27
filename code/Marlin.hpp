@@ -49,7 +49,7 @@ private:
     Decoder decoder;
 
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
-    uint64_t ic = 0;// instruction counter
+//    uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;
     void fetch();
     void decode();

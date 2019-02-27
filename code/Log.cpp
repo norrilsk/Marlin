@@ -35,10 +35,10 @@ Loger::Loger(std::string path) :path(path)
         stream  = new std::ofstream();
     this->open(path);
 }
-Loger::Loger(std::string path, Log::PrintType mod): type(mod), path(path)
+/*Loger::Loger(std::string path, Log::PrintType mod): type(mod), path(path)
 {
     this->open(path);
-}
+}*/
 
 void Loger::err(std::string &message)
 {
