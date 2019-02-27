@@ -3,3 +3,4 @@ Memory size : 4194304
 Whole log : true
 Register file size : 32
 Log path : ../../MarlinLog.txt
+Pipeline stages num : 5

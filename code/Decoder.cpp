@@ -1,5 +1,12 @@
 #include"Decoder.hpp"
 #include "Marlin.hpp"
+
+Decoder::Decoder(Config& config, HazartUnit& hz) :config(config), hazartUnit(hz) , pipeline_size(config.get_num_of_pipeline_stages()),
+                                i_op_arr(pipeline_size), b_op_arr(pipeline_size), r_op_arr(pipeline_size), s_op_arr(pipeline_size), u_op_arr(pipeline_size), j_op_arr(pipeline_size)
+{
+
+};
+
 Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
 {
     this->instr = instr;
@@ -24,7 +31,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     switch (type)
     {
     case OPER_TYPE_R:
-        op_r = new OperR(name);
+        op_r = r_op_arr.get_next();
         op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         if (reg.is_dirty(num_rs1))
         {
@@ -46,7 +53,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_r);
         break;
     case OPER_TYPE_I:
-        op_i = new OperI(name);
+        op_i = i_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_i);
         op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         if (reg.is_dirty(num_rs1))
@@ -59,7 +66,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         break;
     case OPER_TYPE_S:
-        op_s = new OperS(name);
+        op_s = s_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_s);
         if (reg.is_dirty(num_rs1))
         {
@@ -79,7 +86,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         break;
     case OPER_TYPE_B:
-        op_b = new OperB(name);
+        op_b = b_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_b);
         if (reg.is_dirty(num_rs1))
         {
@@ -99,12 +106,12 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         break;
     case OPER_TYPE_U:
-        op_u = new OperU(name);
+        op_u = u_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_u);
         op_u->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
     case OPER_TYPE_J:
-        op_j = new OperJ(name);
+        op_j = j_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_j);
         op_j->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
