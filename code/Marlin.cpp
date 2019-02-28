@@ -25,6 +25,15 @@ Register& Regfile::get_reg_ref(uint32_t num, AccessType acc)
     
 }
 
+void Regfile::write_reg(Register reg )
+{
+    uint32_t num = reg.get_name();
+    if ( num > this->num_regs)
+        throw 1;
+    regs[num] = reg;
+    dirtiness[num]++;
+}
+
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
                    mmu(config), regfile(config), hazartUnit(config,fd_cell,de_cell,em_cell,mw_cell), decoder(config,hazartUnit)
 {
@@ -45,6 +54,8 @@ void Marlin::run()
 {
     while(1)
     {
+        write_back();
+        memory_access();
         execute();
         decode();
         fetch();
@@ -52,6 +63,7 @@ void Marlin::run()
         fd_cell.update();
         de_cell.update();
         em_cell.update();
+        mw_cell.update();
         pc+=4;
         clocks++;
     }
@@ -96,4 +108,34 @@ void Marlin::execute()
     em->pc = de->pc;
     em->op = de->op;
     em->is_stall = de->is_stall;
+}
+void Marlin::memory_access()
+{
+    EM* em = em_cell.get_load_ptr();
+    MW* mw = mw_cell.get_store_ptr();
+    mw->is_stall = em->is_stall;
+    if (em->is_stall)
+    {
+        return;
+    }
+    mw->op = em->op;
+    mw->pc = em->pc;
+}
+
+void Marlin::write_back()
+{
+    MW* mw = mw_cell.get_load_ptr();
+    Oper* oper = mw->op;
+    if (mw->is_stall)
+    {
+        return;
+    }
+    if (oper->get_type() == OPER_TYPE_R
+        || oper->get_type() == OPER_TYPE_I
+        || oper->get_type()== OPER_TYPE_U
+        || oper->get_type() == OPER_TYPE_J
+        )
+    {
+        regfile.write_reg(oper->get_rd());
+    }
 }

@@ -119,7 +119,8 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = new Oper;
         print_and_raise_error(instr);
     }
-
+    op->name = this->name;
+    op->type = this->type;
     op->main_executor = executor; // set function for execution
 
     op->calc_imm(instr); //may be it should be moved to execute stage

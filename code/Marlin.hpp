@@ -26,7 +26,7 @@ public:
     Register get_reg(uint32_t num, AccessType acc = ACCESS_TYPE_READ);
     Register& get_reg_ref(uint32_t num, AccessType acc = ACCESS_TYPE_READ);
     uint32_t is_dirty(uint32_t num){return dirtiness[num];}
-    void write_reg(Register reg ,uint32_t num){regs[num] = reg;}
+    void write_reg(Register reg );
     explicit Regfile(Config& config);
     ~Regfile() = default;
     
@@ -54,6 +54,8 @@ private:
     void fetch();
     void decode();
     void execute();
+    void memory_access();
+    void write_back();
 public:
     void run();
     
