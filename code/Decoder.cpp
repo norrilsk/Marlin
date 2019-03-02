@@ -19,20 +19,22 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     OperJ* op_j;
     name = OPER_NAME_NONE;
     type=  OPER_TYPE_NONE;
+    mem_acc_type = ACCESS_TYPE_NONE;
     executor = nullptr;
-    uint32_t funct3 = (instr >> 12) & 0b0111;
-    uint32_t funct7 = (instr >> 25) &0b01111111;
-    uint32_t opcode = instr & 0b1111111;
-    uint32_t num_rs1 =(instr >> 15)&0b011111;
-    uint32_t num_rs2 = (instr >> 20) &0b011111;
-    uint32_t num_rd = (instr >> 7) &0b011111;
+    acc_size = 0;
+    uint32_t funct3 = (instr >> 12) & 0b0111u;
+    uint32_t funct7 = (instr >> 25) &0b01111111u;
+    uint32_t opcode = instr & 0b1111111u;
+    uint32_t num_rs1 =(instr >> 15)&0b011111u;
+    uint32_t num_rs2 = (instr >> 20) &0b011111u;
+    uint32_t num_rd = (instr >> 7) &0b011111u;
     recognize_oper(opcode, funct3, funct7);
    
     switch (type)
     {
     case OPER_TYPE_R:
         op_r = r_op_arr.get_next();
-        op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
+        
         if (reg.is_dirty(num_rs1))
         {
             op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
@@ -50,12 +52,13 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         {
             op_r->rs2 = reg.get_reg(num_rs2);
         }
+        op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         op = dynamic_cast<Oper*>(op_r);
         break;
     case OPER_TYPE_I:
         op_i = i_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_i);
-        op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
+        
         if (reg.is_dirty(num_rs1))
         {
             op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
@@ -64,6 +67,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         {
             op_i->rs1 = reg.get_reg(num_rs1);
         }
+        op_i->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
     case OPER_TYPE_S:
         op_s = s_op_arr.get_next();
@@ -122,7 +126,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     op->name = this->name;
     op->type = this->type;
     op->main_executor = executor; // set function for execution
-
+    op->opcode = opcode;
     op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
@@ -184,18 +188,28 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         {
         case 0b000:
             name = OPER_NAME_LB;
+            mem_acc_type = ACCESS_TYPE_READ;
+            acc_size =1;
             break;
         case 0b001:
             name = OPER_NAME_LH;
+            mem_acc_type = ACCESS_TYPE_READ;
+            acc_size =2;
             break;
         case 0b010:
             name = OPER_NAME_LW;
+            mem_acc_type = ACCESS_TYPE_READ;
+            acc_size =4;
             break;
         case 0b100:
             name = OPER_NAME_LBU;
+            mem_acc_type = ACCESS_TYPE_READ;
+            acc_size = 1;
             break;
         case 0b101:
             name = OPER_NAME_LHU;
+            mem_acc_type = ACCESS_TYPE_READ;
+            acc_size = 2;
             break;
         default:
             print_and_raise_error(instr);
@@ -207,12 +221,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         {
         case 0b000:
             name = OPER_NAME_SB;
+            mem_acc_type = ACCESS_TYPE_WRITE;
+            acc_size = 1;
             break;
         case 0b001:
             name = OPER_NAME_SH;
+            mem_acc_type = ACCESS_TYPE_WRITE;
+            acc_size = 2;
             break;
         case 0b010:
             name = OPER_NAME_SW;
+            mem_acc_type = ACCESS_TYPE_WRITE;
+            acc_size = 4;
+            executor = &(Executors::MainInstrExecutorSW);
             break;
         default:
             print_and_raise_error(instr);

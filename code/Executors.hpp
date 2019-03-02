@@ -25,6 +25,7 @@ namespace Executors
   void MainInstrExecutorSLTI(Oper *op, DE *de);
   void MainInstrExecutorSLTIU(Oper *op, DE *de);
   void MainInstrExecutorXORI(Oper *op, DE *de);
+<<<<<<< HEAD
   void MainInstrExecutorORI(Oper *op, DE *de);
   void MainInstrExecutorANDI(Oper *op, DE *de);
   void MainInstrExecutorSLLI(Oper *op, DE *de);
@@ -41,6 +42,9 @@ namespace Executors
   void MainInstrExecutorOR(Oper *op, DE *de);
   void MainInstrExecutorAND(Oper *op, DE *de);
 
+=======
+  void MainInstrExecutorSW(Oper *op, DE *de);
+>>>>>>> 72092c3a233424a1c3649917fc3a34fbcf241779
 }
 
 #endif //MARLIN_EXECUTORS_HPP

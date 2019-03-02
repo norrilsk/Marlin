@@ -13,8 +13,8 @@ class HazartUnit
     Cell <FD>& fd_cell; //fetch-decode cell
     Cell <DE>& de_cell; //decode-execute cell
     Cell <EM>& em_cell; //execute-memory access cell
-    Cell <MW>& mw_cell; //meory access - write back cell
-    bool is_oper_load(Oper* op);
+    Cell <MW>& mw_cell; //memory access - write back cell
+    inline bool is_oper_load(Oper* op);
 public:
     HazartUnit(Config& , Cell <FD>&,  Cell <DE>&, Cell <EM>&, Cell <MW>&);
     Register hazart_in_decode(Register rs);
