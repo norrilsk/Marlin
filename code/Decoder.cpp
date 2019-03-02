@@ -222,12 +222,31 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         switch (funct3)
         {
         case 0b001: //SLLI
-        case 0b101: //SRLI SRAI TODO: add this later
+            type = OPER_TYPE_I;
+            name = OPER_NAME_SLLI;
+            executor = &(Executors::MainInstrExecutorSLLI);
+            break;
+        case 0b101:
+            switch (funct7) //SRLI SRAI TODO: add this later
+            {
+                case 0b0000000:
+                    type = OPER_TYPE_I;
+                    name = OPER_NAME_SRLI;
+                    executor = &(Executors::MainInstrExecutorSRLI);
+                    break;
+                case 0b0100000:
+                    type = OPER_TYPE_I;
+                    name = OPER_NAME_SRAI;
+                    executor = &(Executors::MainInstrExecutorSRAI);
+                    break;
+                default:
+                    print_and_raise_error(instr);
+            }
             print_and_raise_error(instr);
         case 0b000:
             type = OPER_TYPE_I;
             name = OPER_NAME_ADDI;
-            executor = &(Executors::MainInstrExecutorAUIPC);
+            executor = &(Executors::MainInstrExecutorADDI);
             break;
         case 0b010:
             type = OPER_TYPE_I;
@@ -267,9 +286,11 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_ADD;
+                executor = &(Executors::MainInstrExecutorADD);
                 break;
             case 0b0100000:
                 name = OPER_NAME_SUB;
+                executor = &(Executors::MainInstrExecutorSUB);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -280,6 +301,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_SLL;
+                executor = &(Executors::MainInstrExecutorSLL);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -290,6 +312,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_SLT;
+                executor = &(Executors::MainInstrExecutorSLT);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -300,6 +323,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_SLTU;
+                executor = &(Executors::MainInstrExecutorSLTU);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -310,6 +334,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_XOR;
+                executor = &(Executors::MainInstrExecutorXOR);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -333,6 +358,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_OR;
+                executor = &(Executors::MainInstrExecutorOR);
                 break;
             default:
                 print_and_raise_error(instr);
@@ -343,6 +369,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_AND;
+                executor = &(Executors::MainInstrExecutorAND);
                 break;
             default:
                 print_and_raise_error(instr);
