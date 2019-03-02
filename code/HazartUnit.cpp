@@ -47,19 +47,9 @@ Register HazartUnit::hazart_in_decode(Register rs)
     
 }
 
-bool HazartUnit::is_oper_load(Oper* op)
+inline bool HazartUnit::is_oper_load(Oper* op)
 {
-    switch (op->get_name())
-    {
-    case OPER_NAME_LB:
-    case OPER_NAME_LH:
-    case OPER_NAME_LW:
-    case OPER_NAME_LBU:
-    case OPER_NAME_LHU:
-        return true;
-    default:
-        return false;
-    }
+    return (op->get_mem_acc_type() == ACCESS_TYPE_READ);
 }
 
 HazartUnit::~HazartUnit()

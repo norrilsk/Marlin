@@ -118,6 +118,25 @@ void Marlin::memory_access()
     {
         return;
     }
+    Oper* oper = em->op;
+    AccessType op_acc_type = oper->get_mem_acc_type();
+    OperType  op_type = oper->get_type();
+    if ((ACCESS_TYPE_WRITE == op_acc_type )&&(OPER_TYPE_S == op_type))
+    {
+        OperS* op_s = dynamic_cast<OperS*>(oper);
+        int32_t data = op_s->get_rs2().get_value();
+        uint64_t addr = static_cast<uint64_t>(op_s->get_store_addr());
+        uint64_t size = static_cast<uint64_t>(op_s->get_store_size());
+        mmu.write_to_mem(&data,addr,size);
+    }
+    if ((ACCESS_TYPE_READ == op_acc_type) &&(OPER_TYPE_I == op_type))
+    {
+        OperI* op_i = dynamic_cast<OperI*>(oper);
+        int32_t data = 0;
+        uint64_t addr = static_cast<uint64_t>(op_i->get_load_addr());
+        uint64_t size = static_cast<uint64_t>(op_i->get_load_size());
+        mmu.read_from_mem(&data,addr,size);
+    }
     mw->op = em->op;
     mw->pc = em->pc;
 }

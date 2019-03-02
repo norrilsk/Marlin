@@ -11,6 +11,7 @@ namespace Executors
   void MainInstrExecutorANDI(Oper *op, DE *de);
   void MainInstrExecutorORI(Oper *op, DE *de);
   void MainInstrExecutorXORI(Oper *op, DE *de);
+  void MainInstrExecutorSW(Oper *op, DE *de);
 }
 
 #endif //MARLIN_EXECUTORS_HPP
