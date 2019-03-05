@@ -13,19 +13,11 @@ namespace Executors
   //void MainInstrExecutorBGE(Oper *op, DE *de);
   //void MainInstrExecutorBLTU(Oper *op, DE *de);
   //void MainInstrExecutorBGEU(Oper *op, DE *de);
-  //void MainInstrExecutorLB(Oper *op, DE *de);
-  //void MainInstrExecutorLH(Oper *op, DE *de);
-  //void MainInstrExecutorLW(Oper *op, DE *de);
-  //void MainInstrExecutorLBU(Oper *op, DE *de);
-  //void MainInstrExecutorLHU(Oper *op, DE *de);
-  //void MainInstrExecutorSB(Oper *op, DE *de);
-  //void MainInstrExecutorSH(Oper *op, DE *de);
-  //void MainInstrExecutorSW(Oper *op, DE *de);
+  void MainInstrExecutorStoreLoad(Oper *op, DE *de); //SW SH SB LW LH LHU LB LBU
   void MainInstrExecutorADDI(Oper *op, DE *de);
   void MainInstrExecutorSLTI(Oper *op, DE *de);
   void MainInstrExecutorSLTIU(Oper *op, DE *de);
   void MainInstrExecutorXORI(Oper *op, DE *de);
-<<<<<<< HEAD
   void MainInstrExecutorORI(Oper *op, DE *de);
   void MainInstrExecutorANDI(Oper *op, DE *de);
   void MainInstrExecutorSLLI(Oper *op, DE *de);
@@ -37,14 +29,10 @@ namespace Executors
   void MainInstrExecutorSLT(Oper *op, DE *de);
   void MainInstrExecutorSLTU(Oper *op, DE *de);
   void MainInstrExecutorXOR(Oper *op, DE *de);
-  //void MainInstrExecutorSRL(Oper *op, DE *de);
-  //void MainInstrExecutorSRA(Oper *op, DE *de);
+  void MainInstrExecutorSRL(Oper *op, DE *de);
+  void MainInstrExecutorSRA(Oper *op, DE *de);
   void MainInstrExecutorOR(Oper *op, DE *de);
   void MainInstrExecutorAND(Oper *op, DE *de);
-
-=======
-  void MainInstrExecutorSW(Oper *op, DE *de);
->>>>>>> 72092c3a233424a1c3649917fc3a34fbcf241779
 }
 
 #endif //MARLIN_EXECUTORS_HPP

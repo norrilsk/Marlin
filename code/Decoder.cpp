@@ -184,6 +184,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         break;
     case 0b0000011:
         type = OPER_TYPE_I;
+        executor = &(Executors::MainInstrExecutorStoreLoad);
         switch (funct3)
         {
         case 0b000:
@@ -223,17 +224,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             name = OPER_NAME_SB;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 1;
+            executor = &(Executors::MainInstrExecutorStoreLoad);
             break;
         case 0b001:
             name = OPER_NAME_SH;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 2;
+            executor = &(Executors::MainInstrExecutorStoreLoad);
             break;
         case 0b010:
             name = OPER_NAME_SW;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 4;
-            executor = &(Executors::MainInstrExecutorSW);
+            executor = &(Executors::MainInstrExecutorStoreLoad);
             break;
         default:
             print_and_raise_error(instr);
@@ -366,9 +369,11 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             {
             case 0b0000000:
                 name = OPER_NAME_SRL;
+                executor = &(Executors::MainInstrExecutorSRL);
                 break;
             case 0b0100000:
                 name = OPER_NAME_SRA;
+                    executor = &(Executors::MainInstrExecutorSRA);
                 break;
             default:
                 print_and_raise_error(instr);

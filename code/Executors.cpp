@@ -17,6 +17,16 @@ void Executors::MainInstrExecutorAUIPC(Oper *op, DE *de)
     int32_t val = imm+ de->pc;
     rd.set_value(val);
 }
+void Executors::MainInstrExecutorStoreLoad(Oper *op, DE *de)
+{
+    (void) de;
+    OperS *oper = dynamic_cast<OperS*>(op);
+    Register rs1 = oper->get_rs1();
+    int32_t imm = oper->get_imm();
+    int32_t addr = imm + rs1.get_value();
+    oper->set_store_addr(addr);
+
+}
 void Executors::MainInstrExecutorADDI(Oper *op, DE *de)
 {
     (void)de;
@@ -68,13 +78,8 @@ void Executors::MainInstrExecutorXORI(Oper *op, DE *de)
     int32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
-<<<<<<< HEAD
-    uint32_t res;
-    res = rs1.get_value() ^ imm;
-=======
     int32_t res;
     res = rs1.get_value() & imm;
->>>>>>> 72092c3a233424a1c3649917fc3a34fbcf241779
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorORI(Oper *op, DE *de)
@@ -93,25 +98,19 @@ void Executors::MainInstrExecutorANDI(Oper *op, DE *de)
     int32_t imm = op->get_imm();
     Register rs1 = op->get_rs1();
     Register& rd = op->get_rd_ref();
-<<<<<<< HEAD
-    uint32_t res;
-    res = rs1.get_value() & imm;
-=======
     int32_t res;
     res = rs1.get_value() ^ imm;
->>>>>>> 72092c3a233424a1c3649917fc3a34fbcf241779
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorSLLI(Oper *op, DE *de)
 {
     (void)de;
-<<<<<<< HEAD
     OperI *oper = static_cast<OperI *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     uint32_t imm = oper->get_imm();
     uint32_t shift = imm & 0b11111;
-    uint32_t res;
+    int32_t res;
     res = rs1.get_value() << shift;
     rd.set_value(res);
 }
@@ -123,8 +122,8 @@ void Executors::MainInstrExecutorSRLI(Oper *op, DE *de)
     Register rs1 = op->get_rs1();
     uint32_t imm = oper->get_imm();
     uint32_t shift = imm & 0b11111;
-    uint32_t res;
-    res = rs1.get_value() >> shift;
+    int32_t res;
+    res = static_cast<uint32_t >(rs1.get_value()) >> shift;
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorSRAI(Oper *op, DE *de)
@@ -136,8 +135,8 @@ void Executors::MainInstrExecutorSRAI(Oper *op, DE *de)
     uint32_t imm = oper->get_imm();
     uint32_t shift = imm & 0b11111;
     int32_t res;
-    res = static_cast<int32_t>(rs1.get_value()) >> shift;
-    rd.set_value(static_cast<uint32_t>(res));
+    res = rs1.get_value() >> shift;
+    rd.set_value(res);
 }
 void Executors::MainInstrExecutorADD(Oper *op, DE *de)
 {
@@ -146,7 +145,7 @@ void Executors::MainInstrExecutorADD(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res = rs1.get_value() + rs2.get_value();
+    int32_t res = rs1.get_value() + rs2.get_value();
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorSUB(Oper *op, DE *de)
@@ -156,7 +155,7 @@ void Executors::MainInstrExecutorSUB(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res = rs1.get_value() - rs2.get_value();
+    int32_t res = rs1.get_value() - rs2.get_value();
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorSLL(Oper *op, DE *de)
@@ -166,7 +165,7 @@ void Executors::MainInstrExecutorSLL(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res = rs1.get_value() << rs2.get_value();
+    int32_t res = rs1.get_value() << rs2.get_value();
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorSLT(Oper *op, DE *de)
@@ -187,7 +186,7 @@ void Executors::MainInstrExecutorSLT(Oper *op, DE *de)
     }
     rd.set_value(static_cast<uint32_t>(res));
 }
-void Executors::MainInstrExecutorSLTU(Oper *op, DE *de) // Note, SLTU rd, x0, rs2 sets rd to 1 if rs2 is not equal to zero, otherwise sets rd to zero (assembler pseudo-op SNEZ rd, rs)
+void Executors::MainInstrExecutorSLTU(Oper *op, DE *de)
 {
     (void)de;
     OperR *oper = static_cast<OperR *>(op);
@@ -212,8 +211,28 @@ void Executors::MainInstrExecutorXOR(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res;
+    int32_t res;
     res = rs1.get_value() ^ rs2.get_value();
+    rd.set_value(res);
+}
+void Executors::MainInstrExecutorSRL(Oper *op, DE *de)
+{
+    (void)de;
+    OperR *oper = static_cast<OperR *>(op);
+    Register& rd = oper->get_rd_ref();
+    Register rs1 = op->get_rs1();
+    Register rs2 = op->get_rs2();
+    int32_t res = static_cast<uint32_t >(rs1.get_value()) >> rs2.get_value();
+    rd.set_value(res);
+}
+void Executors::MainInstrExecutorSRA(Oper *op, DE *de)
+{
+    (void)de;
+    OperR *oper = static_cast<OperR *>(op);
+    Register& rd = oper->get_rd_ref();
+    Register rs1 = op->get_rs1();
+    Register rs2 = op->get_rs2();
+    int32_t res = rs1.get_value() >> rs2.get_value();
     rd.set_value(res);
 }
 void Executors::MainInstrExecutorOR(Oper *op, DE *de)
@@ -223,7 +242,7 @@ void Executors::MainInstrExecutorOR(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res;
+    int32_t res;
     res = rs1.get_value() | rs2.get_value();
     rd.set_value(res);
 }
@@ -234,26 +253,8 @@ void Executors::MainInstrExecutorAND(Oper *op, DE *de)
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
-    uint32_t res;
+    int32_t res;
     res = rs1.get_value() & rs2.get_value();
     rd.set_value(res);
 }
-=======
-    OperU *oper = dynamic_cast<OperU *>(op);
-    Register& rd = oper->get_rd_ref();
-    int32_t imm = oper->get_imm();
-    int32_t val = imm ;
-    rd.set_value(val);
-}
 
-void Executors::MainInstrExecutorSW(Oper *op, DE *de)
-{
-    (void) de;
-    OperS *oper = dynamic_cast<OperS*>(op);
-    Register rs1 = oper->get_rs1();
-    int32_t imm = oper->get_imm();
-    int32_t addr = imm+ rs1.get_value();
-    oper->set_store_addr(addr);
-    
-}
->>>>>>> 72092c3a233424a1c3649917fc3a34fbcf241779
