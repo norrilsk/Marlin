@@ -4,7 +4,7 @@
 
 Memory::Memory( Config& config ): config(config), log(config.get_log_ref())
 {
-    size = config.get_mem_size();
+    size = this->config.get_mem_size();
     memory.resize(size);
 }
 

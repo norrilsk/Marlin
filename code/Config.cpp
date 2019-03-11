@@ -51,6 +51,11 @@ void Config::read_config_file(std::string path)
             num_regs = std::stol(value);
             continue;
         }
+        if (!name.compare(0, 19, "Pipeline stages num"))
+        {
+            pipeline_stages = std::stol(value);
+            continue;
+        }
         if (!name.compare(0,9,"Whole log"))
         {
             if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
