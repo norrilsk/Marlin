@@ -36,7 +36,7 @@ private:
     Log::Loger& log;
     MMU mmu;
     Regfile regfile;
-    uint64_t pc;
+    Cell <WF>  fetch_cell;
     Cell <FD> fd_cell; //fetch-decode cell
     Cell <DE> de_cell; //decode-execute cell
     Cell <EM> em_cell; //execute-memory access cell

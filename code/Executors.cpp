@@ -1,9 +1,9 @@
-#include "Executors.hpp"
+#include "Oper.hpp"
 
 void Executors::MainInstrExecutorLUI(Oper *op, DE *de)
 {
     (void)de;
-    OperU *oper = static_cast<OperU *>(op);
+    OperU *oper = dynamic_cast<OperU *>(op);
     Register& rd = oper->get_rd_ref();
     uint32_t imm = oper->get_imm();
     uint32_t val = imm ;
@@ -105,7 +105,7 @@ void Executors::MainInstrExecutorANDI(Oper *op, DE *de)
 void Executors::MainInstrExecutorSLLI(Oper *op, DE *de)
 {
     (void)de;
-    OperI *oper = static_cast<OperI *>(op);
+    OperI *oper = dynamic_cast<OperI *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     uint32_t imm = oper->get_imm();
@@ -117,7 +117,7 @@ void Executors::MainInstrExecutorSLLI(Oper *op, DE *de)
 void Executors::MainInstrExecutorSRLI(Oper *op, DE *de)
 {
     (void)de;
-    OperI *oper = static_cast<OperI *>(op);
+    OperI *oper = dynamic_cast<OperI *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     uint32_t imm = oper->get_imm();
@@ -129,7 +129,7 @@ void Executors::MainInstrExecutorSRLI(Oper *op, DE *de)
 void Executors::MainInstrExecutorSRAI(Oper *op, DE *de)
 {
     (void)de;
-    OperI *oper = static_cast<OperI *>(op);
+    OperI *oper = dynamic_cast<OperI *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     uint32_t imm = oper->get_imm();
@@ -141,7 +141,7 @@ void Executors::MainInstrExecutorSRAI(Oper *op, DE *de)
 void Executors::MainInstrExecutorADD(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -151,7 +151,7 @@ void Executors::MainInstrExecutorADD(Oper *op, DE *de)
 void Executors::MainInstrExecutorSUB(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -161,7 +161,7 @@ void Executors::MainInstrExecutorSUB(Oper *op, DE *de)
 void Executors::MainInstrExecutorSLL(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -171,7 +171,7 @@ void Executors::MainInstrExecutorSLL(Oper *op, DE *de)
 void Executors::MainInstrExecutorSLT(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -189,7 +189,7 @@ void Executors::MainInstrExecutorSLT(Oper *op, DE *de)
 void Executors::MainInstrExecutorSLTU(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -207,7 +207,7 @@ void Executors::MainInstrExecutorSLTU(Oper *op, DE *de)
 void Executors::MainInstrExecutorXOR(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -218,7 +218,7 @@ void Executors::MainInstrExecutorXOR(Oper *op, DE *de)
 void Executors::MainInstrExecutorSRL(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -228,7 +228,7 @@ void Executors::MainInstrExecutorSRL(Oper *op, DE *de)
 void Executors::MainInstrExecutorSRA(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -238,7 +238,7 @@ void Executors::MainInstrExecutorSRA(Oper *op, DE *de)
 void Executors::MainInstrExecutorOR(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -249,7 +249,7 @@ void Executors::MainInstrExecutorOR(Oper *op, DE *de)
 void Executors::MainInstrExecutorAND(Oper *op, DE *de)
 {
     (void)de;
-    OperR *oper = static_cast<OperR *>(op);
+    OperR *oper = dynamic_cast<OperR *>(op);
     Register& rd = oper->get_rd_ref();
     Register rs1 = op->get_rs1();
     Register rs2 = op->get_rs2();
@@ -258,3 +258,16 @@ void Executors::MainInstrExecutorAND(Oper *op, DE *de)
     rd.set_value(res);
 }
 
+void Executors::MainInstrExecutorBLTU(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    uint32_t  rs1_val = static_cast<uint32_t >(oper->rs1.get_value());
+    uint32_t  rs2_val = static_cast<uint32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val < rs2_val)
+    {
+        res = true;
+    }
+    oper->br_is_taken = res;
+}

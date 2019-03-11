@@ -10,7 +10,7 @@ private:
     uint64_t memory_size = page_size* 1024;
     uint32_t pipeline_stages = 0; 
     std::string path_to_log;
-    uint64_t  num_regs;
+    uint64_t  num_regs =0;
     bool marlin_log = true;
     Log::Loger log;
    

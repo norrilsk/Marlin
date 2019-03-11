@@ -22,6 +22,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     mem_acc_type = ACCESS_TYPE_NONE;
     executor = nullptr;
     acc_size = 0;
+    is_branch = false;
     uint32_t funct3 = (instr >> 12) & 0b0111u;
     uint32_t funct7 = (instr >> 25) &0b01111111u;
     uint32_t opcode = instr & 0b1111111u;
@@ -127,6 +128,8 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     op->type = this->type;
     op->main_executor = executor; // set function for execution
     op->opcode = opcode;
+    op->is_branch = is_branch;
+    op->mem_acc_type =  mem_acc_type;
     op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
@@ -158,6 +161,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         break;
     case 0b1100011:
         type = OPER_TYPE_B;
+        is_branch = true;
         switch (funct3)
         {
         case 0b000:
@@ -174,6 +178,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             break;
         case 0b110:
             name = OPER_NAME_BLTU;
+            executor = &(Executors::MainInstrExecutorBLTU);
             break;
         case 0b111:
             name = OPER_NAME_BGEU;

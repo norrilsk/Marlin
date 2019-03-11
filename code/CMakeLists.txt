@@ -31,7 +31,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wno-unused-variable")
 
 add_executable(${PROJECT_NAME} ElfMarlin.cpp Marlin.cpp Marlin.hpp Main.cpp ElfMarlin.hpp Decoder.hpp Decoder.cpp Memory.cpp Memory.hpp MMU.cpp
-MMU.hpp Log.cpp Log.hpp Config.cpp Config.hpp Oper.cpp Oper.hpp Cell.hpp Executors.hpp Executors.cpp HazartUnit.hpp HazartUnit.cpp)
+MMU.hpp Log.cpp Log.hpp Config.cpp Config.hpp Oper.cpp Oper.hpp Cell.hpp Executors.cpp HazartUnit.hpp HazartUnit.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${LIBELF_LIBRARY} )
 

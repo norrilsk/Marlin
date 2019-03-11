@@ -75,6 +75,40 @@ enum OperName
 
 };
 
+namespace Executors
+{
+  void MainInstrExecutorLUI(Oper *op, DE *de);
+  void MainInstrExecutorAUIPC(Oper *op, DE *de);
+  //void MainInstrExecutorJAL(Oper *op, DE *de);
+  //void MainInstrExecutorJALR(Oper *op, DE *de);
+  //void MainInstrExecutorBEQ(Oper *op, DE *de);
+  //void MainInstrExecutorBNE(Oper *op, DE *de);
+  //void MainInstrExecutorBLT(Oper *op, DE *de);
+  //void MainInstrExecutorBGE(Oper *op, DE *de);
+  void MainInstrExecutorBLTU(Oper *op, DE *de);
+  //void MainInstrExecutorBGEU(Oper *op, DE *de);
+  void MainInstrExecutorStoreLoad(Oper *op, DE *de); //SW SH SB LW LH LHU LB LBU
+  void MainInstrExecutorADDI(Oper *op, DE *de);
+  void MainInstrExecutorSLTI(Oper *op, DE *de);
+  void MainInstrExecutorSLTIU(Oper *op, DE *de);
+  void MainInstrExecutorXORI(Oper *op, DE *de);
+  void MainInstrExecutorORI(Oper *op, DE *de);
+  void MainInstrExecutorANDI(Oper *op, DE *de);
+  void MainInstrExecutorSLLI(Oper *op, DE *de);
+  void MainInstrExecutorSRLI(Oper *op, DE *de);
+  void MainInstrExecutorSRAI(Oper *op, DE *de);
+  void MainInstrExecutorADD(Oper *op, DE *de);
+  void MainInstrExecutorSUB(Oper *op, DE *de);
+  void MainInstrExecutorSLL(Oper *op, DE *de);
+  void MainInstrExecutorSLT(Oper *op, DE *de);
+  void MainInstrExecutorSLTU(Oper *op, DE *de);
+  void MainInstrExecutorXOR(Oper *op, DE *de);
+  void MainInstrExecutorSRL(Oper *op, DE *de);
+  void MainInstrExecutorSRA(Oper *op, DE *de);
+  void MainInstrExecutorOR(Oper *op, DE *de);
+  void MainInstrExecutorAND(Oper *op, DE *de);
+}
+
 
 class Register
 {
@@ -98,11 +132,13 @@ class Oper
     OperName name = OPER_NAME_NONE;
     uint32_t opcode;
     AccessType mem_acc_type = ACCESS_TYPE_NONE;
+    bool is_branch = false;
     void(*main_executor)(Oper*, DE*) = nullptr;
     friend class Decoder;
 public:
    
     AccessType get_mem_acc_type(){return mem_acc_type;}
+    bool is_oper_branch(){return is_branch;}
     Oper() = default;
     Oper(OperName name, OperType type);
     virtual void calc_imm(uint32_t instr);
@@ -190,6 +226,7 @@ public:
     OperS()= default;
     ~OperS()= default;
 };
+
 class OperB: public Oper
 {
 private:
@@ -197,13 +234,16 @@ private:
     uint32_t imm;
     Register rs1;
     Register rs2;
+    bool br_is_taken =false;
     friend class Decoder;
+    friend void Executors::MainInstrExecutorBLTU(Oper *op, DE *de);
 public:
     void calc_imm(uint32_t instr);
     uint32_t get_imm() { return imm; }
     uint32_t get_f3() { return funct3; }
     Register get_rs1() { return rs1; }
     Register get_rs2() { return rs2; }
+    bool oper_br_is_taken(){return br_is_taken;}
     explicit OperB(OperName name);
     OperB()= default;
     ~OperB()= default;

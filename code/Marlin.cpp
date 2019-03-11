@@ -35,11 +35,11 @@ void Regfile::write_reg(Register reg )
 }
 
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
-                   mmu(config), regfile(config), hazartUnit(config,fd_cell,de_cell,em_cell,mw_cell), decoder(config,hazartUnit)
+                   mmu(config), regfile(config), hazartUnit(config,fd_cell,de_cell,em_cell,mw_cell,fetch_cell), decoder(config,hazartUnit)
 {
     
     ElfMarlin elf(path_to_data.c_str(),  config.get_log_marlin());
-    pc = elf.get_entry32();
+   
     op_mode = static_cast<uint64_t >(elf.get_i_class());
     if (op_mode != 1)
     {
@@ -47,7 +47,11 @@ Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path
         throw 99;
     }
     elf.load(mmu);
-    pc = elf.get_entry32();
+    
+    WF* wf = fetch_cell.get_store_ptr();
+    wf->pc = static_cast<uint32_t >(elf.get_entry32());
+    wf->is_stall = false;
+    fetch_cell.update();
 }
 
 void Marlin::run()
@@ -60,31 +64,40 @@ void Marlin::run()
         decode();
         fetch();
         
+        fetch_cell.update();
         fd_cell.update();
         de_cell.update();
         em_cell.update();
         mw_cell.update();
-        pc+=4;
         clocks++;
     }
 }
 
 void Marlin::fetch()
 {
+    WF* wf = fetch_cell.get_load_ptr();
+    WF* wf_store = fetch_cell.get_store_ptr();
     FD* fd = fd_cell.get_store_ptr();
     uint32_t  instr;
+    fd->is_stall =wf->is_stall || wf->is_hazard_stall;
+    if (fd->is_stall )
+    {
+        return;
+    }
+    uint32_t  pc = wf->is_jump? wf->pc_jump :wf->pc;
     mmu.read_from_mem(&instr,pc,4);
     
     fd->pc = static_cast<uint32_t>(pc);
     fd->instr = instr;
     fd->is_stall = false;
+    wf_store->pc = pc +4;
 }
 void Marlin::decode()
 {
     FD* fd = fd_cell.get_load_ptr();
     DE* de = de_cell.get_store_ptr();
-    de->is_stall = fd->is_stall;
-    if(fd->is_stall)
+    de->is_stall = fd->is_stall || fd->is_hazard_stall;
+    if(de->is_stall)
     {
         return;
     }
@@ -97,14 +110,20 @@ void Marlin::execute()
 {
     DE* de = de_cell.get_load_ptr();
     EM* em = em_cell.get_store_ptr();
-    em->is_stall = de->is_stall;
-    if(de->is_stall)
+    em->is_stall = de->is_stall || de->is_hazard_stall;
+    if(em->is_stall)
     {
         return;
     }
     Oper* oper = de->op;
     oper->execute(de);
-    
+    if ( oper->is_oper_branch()
+         && OPER_TYPE_B == oper->get_type())
+    {
+        OperB* op_b =dynamic_cast<OperB*>(oper);
+        if (op_b->oper_br_is_taken())
+            hazartUnit.branch_hazart(op_b,de->pc);
+    }
     em->pc = de->pc;
     em->op = de->op;
     em->is_stall = de->is_stall;
@@ -113,8 +132,8 @@ void Marlin::memory_access()
 {
     EM* em = em_cell.get_load_ptr();
     MW* mw = mw_cell.get_store_ptr();
-    mw->is_stall = em->is_stall;
-    if (em->is_stall)
+    mw->is_stall = em->is_stall || em->is_hazard_stall;
+    if (mw->is_stall)
     {
         return;
     }
@@ -145,7 +164,7 @@ void Marlin::write_back()
 {
     MW* mw = mw_cell.get_load_ptr();
     Oper* oper = mw->op;
-    if (mw->is_stall)
+    if (mw->is_stall || mw->is_hazard_stall)
     {
         return;
     }

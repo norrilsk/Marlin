@@ -4,31 +4,79 @@
 
 //predecl
 class Oper;
-
+struct WF // special cell for Fetch take data from
+{
+    bool is_stall = false;
+    bool is_hazard_stall = false;
+    bool is_jump = false;
+    uint32_t pc = 0;
+    uint32_t pc_jump=0;
+    void clear()
+    {
+        is_stall =false;
+        is_hazard_stall = false;
+        is_jump = false;
+        pc = 0;
+        pc_jump = 0;
+    }
+};
 struct FD //Fetch-Decode
 {
     bool is_stall = true;
     uint32_t pc = 0;
     uint32_t instr = 0;
+    bool is_hazard_stall = false;
+    void clear()
+    {
+        is_stall =true;
+        is_hazard_stall = false;
+        pc = 0;
+        instr = 0;
+    }
+    
 };
 struct DE //Decode -Execute
 {
     bool is_stall = true;
+    bool is_hazard_stall = false;
     uint32_t pc = 0;
     Oper * op = nullptr;
+    void clear()
+    {
+        is_stall =true;
+        is_hazard_stall = false;
+        pc = 0;
+        op = nullptr;
+    }
 };
 struct EM //Execute - memory access
 {
     bool is_stall = true;
+    bool is_hazard_stall = false;
     uint32_t pc = 0;
     Oper * op = nullptr;
+    void clear()
+    {
+        is_stall =true;
+        is_hazard_stall = false;
+        pc = 0;
+        op = nullptr;
+    }
 };
 
 struct MW
 {
     bool is_stall = true;
+    bool is_hazard_stall = false;
     uint32_t pc =0;
     Oper* op = nullptr;
+    void clear()
+    {
+        is_stall =true;
+        is_hazard_stall = false;
+        pc = 0;
+        op = nullptr;
+    }
 };
 
 template <typename T>
@@ -78,6 +126,7 @@ void Cell<T>::update()
     T* temp;
     temp = phase1;
     phase1 = phase2;
+    phase1->clear();
     phase2 = temp;
 }
 

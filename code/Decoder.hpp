@@ -4,7 +4,6 @@
 #include "Oper.hpp"
 #include "Log.hpp"
 #include "Config.hpp"
-#include "Executors.hpp"
 #include "HazartUnit.hpp"
 #include<vector>
 
@@ -45,6 +44,7 @@ private:
     OperType type = OPER_TYPE_NONE;
     AccessType mem_acc_type = ACCESS_TYPE_NONE;
     int32_t acc_size;
+    bool is_branch;
     CyclededArray<OperI> i_op_arr;
     CyclededArray<OperB> b_op_arr;
     CyclededArray<OperR> r_op_arr;
