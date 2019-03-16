@@ -17,7 +17,7 @@ void Executors::MainInstrExecutorAUIPC(Oper *op, DE *de)
     int32_t val = imm+ de->pc;
     rd.set_value(val);
 }
-void Executors::MainInstrExecutorStoreLoad(Oper *op, DE *de)
+void Executors::MainInstrExecutorStore(Oper *op, DE *de)
 {
     (void) de;
     OperS *oper = dynamic_cast<OperS*>(op);
@@ -27,6 +27,18 @@ void Executors::MainInstrExecutorStoreLoad(Oper *op, DE *de)
     oper->set_store_addr(addr);
 
 }
+
+void Executors::MainInstrExecutorLoad(Oper *op, DE *de)
+{
+    (void) de;
+    OperI *oper = dynamic_cast<OperI*>(op);
+    Register rs1 = oper->get_rs1();
+    int32_t imm = oper->get_imm();
+    int32_t addr = imm + rs1.get_value();
+    oper->set_load_addr(addr);
+    
+}
+
 void Executors::MainInstrExecutorADDI(Oper *op, DE *de)
 {
     (void)de;
@@ -270,4 +282,11 @@ void Executors::MainInstrExecutorBLTU(Oper *op, DE *de)
         res = true;
     }
     oper->br_is_taken = res;
+}
+void Executors::MainInstrExecutorJAL(Oper *op, DE *de)
+{
+    OperJ *oper = dynamic_cast<OperJ*>(op);
+   // int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    Register& rd = oper->get_rd_ref();
+    rd.set_value(de->pc+4);
 }

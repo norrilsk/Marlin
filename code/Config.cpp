@@ -27,6 +27,8 @@ std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
 void Config::read_config_file(std::string path)
 {
     std::ifstream input(path);
+    if (!input.is_open())
+        throw -3;
     std::string name, value;
     name.resize(256);
     value.resize(256);

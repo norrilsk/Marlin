@@ -1,8 +1,8 @@
 #include "HazartUnit.hpp"
 
 
-HazartUnit::HazartUnit(Config& config, Cell <FD>& fd_cell, Cell <DE>& de_cell, Cell <EM>& em_cell, Cell <MW>& mw_cell,Cell <WF>& wf_cell):
-    config(config), fd_cell(fd_cell), de_cell(de_cell), em_cell(em_cell), mw_cell(mw_cell), wf_cell(wf_cell)
+HazartUnit::HazartUnit(Config& config, Regfile& regfile, Cell <FD>& fd_cell, Cell <DE>& de_cell, Cell <EM>& em_cell, Cell <MW>& mw_cell,Cell <WF>& wf_cell):
+    config(config), regfile(regfile), fd_cell(fd_cell), de_cell(de_cell), em_cell(em_cell), mw_cell(mw_cell), wf_cell(wf_cell)
 {
     (void)this->config.get_page_size();
     (void)this->fd_cell.phase1;
@@ -11,12 +11,14 @@ HazartUnit::HazartUnit(Config& config, Cell <FD>& fd_cell, Cell <DE>& de_cell, C
 
 Register HazartUnit::hazart_in_decode(Register rs)
 {
-    EM *em = em_cell.get_store_ptr();
-    Oper* oper = em->op;
-    if (oper->get_type() == OPER_TYPE_R
-        || oper->get_type() == OPER_TYPE_I
-        || oper->get_type() == OPER_TYPE_U
-        || oper->get_type() == OPER_TYPE_J
+    DE* de = de_cell.get_load_ptr();
+    bool stall = de->is_stall || de->is_hazard_stall;
+    Oper* oper = de->op;
+    if (!stall &&
+            (oper->get_type() == OPER_TYPE_R
+            || oper->get_type() == OPER_TYPE_I
+            || oper->get_type() == OPER_TYPE_U
+            || oper->get_type() == OPER_TYPE_J)
         )
     {
         Register rd = oper->get_rd();
@@ -28,12 +30,14 @@ Register HazartUnit::hazart_in_decode(Register rs)
             return rd;
         }
     }
-    MW * mw = mw_cell.get_store_ptr();
-    oper = mw->op;
-    if (oper->get_type() == OPER_TYPE_R
-        || oper->get_type() == OPER_TYPE_I
-        || oper->get_type()== OPER_TYPE_U
-        || oper->get_type() == OPER_TYPE_J
+    EM * em = em_cell.get_load_ptr();
+    oper = em->op;
+    stall = em->is_stall || em->is_hazard_stall;
+    if (!stall &&
+        (oper->get_type() == OPER_TYPE_R
+            || oper->get_type() == OPER_TYPE_I
+            || oper->get_type() == OPER_TYPE_U
+            || oper->get_type() == OPER_TYPE_J)
         )
     {
         Register rd = oper->get_rd();
@@ -47,7 +51,7 @@ Register HazartUnit::hazart_in_decode(Register rs)
     
 }
 
-void HazartUnit::branch_hazart(OperB *oper, uint32_t pc)
+void HazartUnit::branch_hazart(Oper *oper, uint32_t pc)
 {
    WF * wf = wf_cell.get_store_ptr();
    wf->is_jump = true;
@@ -56,11 +60,24 @@ void HazartUnit::branch_hazart(OperB *oper, uint32_t pc)
    fd->is_hazard_stall = true;
    DE* de = de_cell.get_store_ptr();
    de->is_hazard_stall = true;
+   
 }
 
 inline bool HazartUnit::is_oper_load(Oper* op)
 {
     return (op->get_mem_acc_type() == ACCESS_TYPE_READ);
+}
+
+void HazartUnit::fix_dirtness(Oper *op)
+{
+    OperType  type = op->get_type();
+    if ( OPER_TYPE_R == type
+        || OPER_TYPE_I == type
+        || OPER_TYPE_U == type
+         || OPER_TYPE_J == type)
+    {
+        regfile.virtual_write_reg(op->get_rd());
+    }
 }
 
 HazartUnit::~HazartUnit()

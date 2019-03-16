@@ -58,6 +58,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         break;
     case OPER_TYPE_I:
         op_i = i_op_arr.get_next();
+        op_i->load_size = acc_size;
         op = dynamic_cast<Oper*>(op_i);
         
         if (reg.is_dirty(num_rs1))
@@ -72,6 +73,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         break;
     case OPER_TYPE_S:
         op_s = s_op_arr.get_next();
+        op_s->store_size = acc_size;
         op = dynamic_cast<Oper*>(op_s);
         if (reg.is_dirty(num_rs1))
         {
@@ -150,10 +152,13 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         executor = &(Executors::MainInstrExecutorAUIPC);
         break;
     case 0b1101111:
+        is_branch =true;
         name = OPER_NAME_JAL;
         type = OPER_TYPE_J;
+        executor = &(Executors::MainInstrExecutorJAL);
         break;
     case 0b1100111:
+        is_branch = true;
         name = OPER_NAME_JALR;
         if (funct3 != 0)
             print_and_raise_error(instr);
@@ -189,7 +194,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         break;
     case 0b0000011:
         type = OPER_TYPE_I;
-        executor = &(Executors::MainInstrExecutorStoreLoad);
+        executor = &(Executors::MainInstrExecutorLoad);
         switch (funct3)
         {
         case 0b000:
@@ -229,19 +234,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             name = OPER_NAME_SB;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 1;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         case 0b001:
             name = OPER_NAME_SH;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 2;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         case 0b010:
             name = OPER_NAME_SW;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 4;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         default:
             print_and_raise_error(instr);

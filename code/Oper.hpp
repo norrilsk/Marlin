@@ -74,20 +74,60 @@ enum OperName
     OPER_NAME_NONE,
 
 };
+enum RegName
+{
+    REGISTER_NAME_ZERO = 0,
+    REGISTER_NAME_RA,
+    REGISTER_NAME_SP,
+    REGISTER_NAME_GP,
+    REGISTER_NAME_TP,
+    REGISTER_NAME_T0,
+    REGISTER_NAME_T1,
+    REGISTER_NAME_T2,
+    REGISTER_NAME_S0,
+    REGISTER_NAME_S1,
+    REGISTER_NAME_A0,
+    REGISTER_NAME_A1,
+    REGISTER_NAME_A2,
+    REGISTER_NAME_A3,
+    REGISTER_NAME_A4,
+    REGISTER_NAME_A5,
+    REGISTER_NAME_A6,
+    REGISTER_NAME_A7,
+    REGISTER_NAME_S2,
+    REGISTER_NAME_S3,
+    REGISTER_NAME_S4,
+    REGISTER_NAME_S5,
+    REGISTER_NAME_S6,
+    REGISTER_NAME_S7,
+    REGISTER_NAME_S8,
+    REGISTER_NAME_S9,
+    REGISTER_NAME_S10,
+    REGISTER_NAME_S11,
+    REGISTER_NAME_T3,
+    REGISTER_NAME_T4,
+    REGISTER_NAME_T5,
+    REGISTER_NAME_T6,
+    REGISTER_NAME_NONE
+    
+};
+
+
 
 namespace Executors
 {
   void MainInstrExecutorLUI(Oper *op, DE *de);
   void MainInstrExecutorAUIPC(Oper *op, DE *de);
-  //void MainInstrExecutorJAL(Oper *op, DE *de);
-  //void MainInstrExecutorJALR(Oper *op, DE *de);
+  void MainInstrExecutorJAL(Oper *op, DE *de);
+  void MainInstrExecutorJALR(Oper *op, DE *de);
   //void MainInstrExecutorBEQ(Oper *op, DE *de);
   //void MainInstrExecutorBNE(Oper *op, DE *de);
   //void MainInstrExecutorBLT(Oper *op, DE *de);
   //void MainInstrExecutorBGE(Oper *op, DE *de);
   void MainInstrExecutorBLTU(Oper *op, DE *de);
   //void MainInstrExecutorBGEU(Oper *op, DE *de);
-  void MainInstrExecutorStoreLoad(Oper *op, DE *de); //SW SH SB LW LH LHU LB LBU
+  void MainInstrExecutorStore(Oper *op, DE *de); //SW SH SB
+  void MainInstrExecutorLoad(Oper *op, DE *de); //LW LH LHU LB LBU
   void MainInstrExecutorADDI(Oper *op, DE *de);
   void MainInstrExecutorSLTI(Oper *op, DE *de);
   void MainInstrExecutorSLTIU(Oper *op, DE *de);
@@ -109,17 +149,16 @@ namespace Executors
   void MainInstrExecutorAND(Oper *op, DE *de);
 }
 
-
 class Register
 {
 private:
     int32_t value = 0;
-    uint32_t name;
+    RegName name;
     friend  class Regfile;
 public:
     int32_t get_value() { return value; }
     void set_value(int32_t val){value = val;}
-    uint32_t get_name() {return name;}
+    RegName get_name() {return name;}
     Register() = default;
     ~Register() = default;
 
@@ -142,16 +181,16 @@ public:
     Oper() = default;
     Oper(OperName name, OperType type);
     virtual void calc_imm(uint32_t instr);
-    virtual uint32_t get_imm(){throw 1;}
-    virtual uint32_t get_f3() { throw 1; }
-    virtual uint32_t get_f7() { throw 1; }
-    virtual Register get_rs1() { throw 1; };
-    virtual Register get_rs2() { throw 1; };
-    virtual Register get_rd() {throw 1; };
+    virtual uint32_t get_imm() const{throw 1;}
+    virtual uint32_t get_f3() const{ throw 1; }
+    virtual uint32_t get_f7() const{ throw 1; }
+    virtual Register get_rs1() const{ throw 1; };
+    virtual Register get_rs2() const{ throw 1; };
+    virtual Register get_rd() const{throw 1; };
     virtual Register& get_rd_ref() { throw 1; };
     void execute(DE*);
-    OperName get_name(){ return name;}
-    OperType get_type(){ return type;}
+    OperName get_name() const{ return name;}
+    OperType get_type() const{ return type;}
     virtual ~Oper() = default ;
 };
 
@@ -165,11 +204,11 @@ private:
     Register rd;
     friend class Decoder;
 public:
-    uint32_t get_f3(){return funct3;}
-    uint32_t get_f7(){return funct7;}
-    Register get_rs1(){return rs1;};
-    Register get_rs2(){return rs2;};
-    Register get_rd() { return rd; };
+    uint32_t get_f3() const{return funct3;}
+    uint32_t get_f7() const{return funct7;}
+    Register get_rs1() const{return rs1;};
+    Register get_rs2() const{return rs2;};
+    Register get_rd() const{ return rd; };
     Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
     explicit OperR(OperName name);
@@ -190,14 +229,15 @@ private:
     friend class Decoder;
 public:
     void calc_imm(uint32_t instr);
-    uint32_t get_imm(){return imm;}
-    uint32_t get_f3() { return funct3; }
-    Register get_rs1() { return rs1; };
-    Register get_rd() { return rd; };
+    uint32_t get_imm() const{return imm;}
+    uint32_t get_f3() const{ return funct3; }
+    Register get_rs1() const{ return rs1; };
+    Register get_rd() const{ return rd; };
     Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
-    int32_t get_load_addr(){ return load_addres;}
-    int32_t get_load_size(){ return load_size;}
+    int32_t get_load_addr() const{ return load_addres;}
+    int32_t get_load_size() const{ return load_size;}
+    void set_load_addr(int32_t l_add) {load_addres =l_add;}
     explicit OperI(OperName name);
     OperI()= default;
     ~OperI()= default;
@@ -215,12 +255,12 @@ private:
     friend class Decoder;
 public:
     void calc_imm(uint32_t instr);
-    uint32_t get_imm() { return imm; }
-    uint32_t get_f3() { return funct3; }
-    Register get_rs1() { return rs1; }
-    Register get_rs2() { return rs2; }
-    int32_t get_store_addr(){ return store_addres;}
-    int32_t get_store_size(){ return store_size;}
+    uint32_t get_imm() const { return imm; }
+    uint32_t get_f3() const{ return funct3; }
+    Register get_rs1() const{ return rs1; }
+    Register get_rs2() const{ return rs2; }
+    int32_t get_store_addr() const{ return store_addres;}
+    int32_t get_store_size() const { return store_size;}
     void set_store_addr(int32_t sa){store_addres=sa;}
     explicit OperS(OperName name);
     OperS()= default;
@@ -239,11 +279,11 @@ private:
     friend void Executors::MainInstrExecutorBLTU(Oper *op, DE *de);
 public:
     void calc_imm(uint32_t instr);
-    uint32_t get_imm() { return imm; }
-    uint32_t get_f3() { return funct3; }
-    Register get_rs1() { return rs1; }
-    Register get_rs2() { return rs2; }
-    bool oper_br_is_taken(){return br_is_taken;}
+    uint32_t get_imm() const { return imm; }
+    uint32_t get_f3() const { return funct3; }
+    Register get_rs1() const { return rs1; }
+    Register get_rs2() const { return rs2; }
+    bool oper_br_is_taken() const{return br_is_taken;}
     explicit OperB(OperName name);
     OperB()= default;
     ~OperB()= default;
@@ -257,10 +297,10 @@ private:
     friend class Decoder;
 public:
     void calc_imm(uint32_t instr);
-    Register get_rd() { return rd; };
+    Register get_rd() const{ return rd; };
     Register& get_rd_ref() { return rd; };
     void set_rd(Register rd){this->rd = rd;};
-    uint32_t get_imm() { return imm; }
+    uint32_t get_imm() const{ return imm; }
     explicit OperU(OperName name);
     OperU()= default;
     ~OperU()= default;
@@ -274,8 +314,8 @@ private:
     friend class Decoder;
 public:
     void calc_imm(uint32_t instr);
-    uint32_t get_imm() { return imm; }
-    Register get_rd() { return rd; };
+    uint32_t get_imm() const{ return imm; }
+    Register get_rd() const{ return rd; };
     Register& get_rd_ref() { return rd; };
     void set_rd(Register rd) { this->rd = rd; };
     explicit OperJ(OperName name);
