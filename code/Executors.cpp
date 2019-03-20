@@ -281,12 +281,109 @@ void Executors::MainInstrExecutorBLTU(Oper *op, DE *de)
     {
         res = true;
     }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
     oper->br_is_taken = res;
 }
+
+void Executors::MainInstrExecutorBGEU(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    uint32_t  rs1_val = static_cast<uint32_t >(oper->rs1.get_value());
+    uint32_t  rs2_val = static_cast<uint32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val >= rs2_val)
+    {
+        res = true;
+    }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    oper->br_is_taken = res;
+}
+
+
+void Executors::MainInstrExecutorBEQ(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    uint32_t  rs1_val = static_cast<uint32_t >(oper->rs1.get_value());
+    uint32_t  rs2_val = static_cast<uint32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val == rs2_val)
+    {
+        res = true;
+    }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    oper->br_is_taken = res;
+}
+
+void Executors::MainInstrExecutorBNE(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    uint32_t  rs1_val = static_cast<uint32_t >(oper->rs1.get_value());
+    uint32_t  rs2_val = static_cast<uint32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val != rs2_val)
+    {
+        res = true;
+    }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    oper->br_is_taken = res;
+}
+
+void Executors::MainInstrExecutorBLT(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    int32_t  rs1_val = static_cast<int32_t >(oper->rs1.get_value());
+    int32_t  rs2_val = static_cast<int32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val < rs2_val)
+    {
+        res = true;
+    }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    oper->br_is_taken = res;
+}
+void Executors::MainInstrExecutorBGE(Oper *op, DE *de)
+{
+    (void)de;
+    OperB *oper = dynamic_cast<OperB *>(op);
+    int32_t  rs1_val = static_cast<int32_t >(oper->rs1.get_value());
+    int32_t  rs2_val = static_cast<int32_t >(oper->rs2.get_value());
+    bool res = false;
+    if (rs1_val >= rs2_val)
+    {
+        res = true;
+    }
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    oper->br_is_taken = res;
+}
+
+
 void Executors::MainInstrExecutorJAL(Oper *op, DE *de)
 {
     OperJ *oper = dynamic_cast<OperJ*>(op);
-   // int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+de->pc;
+    oper-> set_br_target_addr(j_addr);
+    
+    Register& rd = oper->get_rd_ref();
+    rd.set_value(de->pc+4);
+}
+void Executors::MainInstrExecutorJALR(Oper *op, DE *de)
+{
+    (void)de;
+    OperI *oper = dynamic_cast<OperI*>(op);
+    Register rs1 = oper->get_rs1();
+    int32_t j_addr = static_cast<int32_t>(oper->get_imm())+rs1.get_value();
+    oper-> set_br_target_addr(j_addr);
+    
     Register& rd = oper->get_rd_ref();
     rd.set_value(de->pc+4);
 }

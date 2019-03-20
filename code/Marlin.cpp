@@ -96,7 +96,7 @@ void Marlin::execute()
         (OPER_TYPE_J == oper->get_type() ||
             (OPER_TYPE_B == oper->get_type() && dynamic_cast<OperB*>(oper)->oper_br_is_taken())))
     {
-            hazartUnit.branch_hazart(oper,de->pc);
+            hazartUnit.branch_hazart(oper);
     }
     
     em->pc = de->pc;

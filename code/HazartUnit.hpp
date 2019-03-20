@@ -22,7 +22,7 @@ public:
     void fix_dirtness(Oper* op);
     HazartUnit(Config& , Regfile&, Cell <FD>&,  Cell <DE>&, Cell <EM>&, Cell <MW>&, Cell <WF>& );
     Register hazart_in_decode(Register rs);
-    void branch_hazart(Oper* oper, uint32_t pc);
+    void branch_hazart(Oper* oper);
     ~HazartUnit();
 };
 #endif

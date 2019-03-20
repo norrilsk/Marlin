@@ -120,12 +120,12 @@ namespace Executors
   void MainInstrExecutorAUIPC(Oper *op, DE *de);
   void MainInstrExecutorJAL(Oper *op, DE *de);
   void MainInstrExecutorJALR(Oper *op, DE *de);
-  //void MainInstrExecutorBEQ(Oper *op, DE *de);
-  //void MainInstrExecutorBNE(Oper *op, DE *de);
-  //void MainInstrExecutorBLT(Oper *op, DE *de);
-  //void MainInstrExecutorBGE(Oper *op, DE *de);
+  void MainInstrExecutorBEQ(Oper *op, DE *de);
+  void MainInstrExecutorBNE(Oper *op, DE *de);
+  void MainInstrExecutorBLT(Oper *op, DE *de);
+  void MainInstrExecutorBGE(Oper *op, DE *de);
   void MainInstrExecutorBLTU(Oper *op, DE *de);
-  //void MainInstrExecutorBGEU(Oper *op, DE *de);
+  void MainInstrExecutorBGEU(Oper *op, DE *de);
   void MainInstrExecutorStore(Oper *op, DE *de); //SW SH SB
   void MainInstrExecutorLoad(Oper *op, DE *de); //LW LH LHU LB LBU
   void MainInstrExecutorADDI(Oper *op, DE *de);
@@ -172,12 +172,16 @@ class Oper
     uint32_t opcode;
     AccessType mem_acc_type = ACCESS_TYPE_NONE;
     bool is_branch = false;
+    uint32_t branch_addr = 0;
     void(*main_executor)(Oper*, DE*) = nullptr;
     friend class Decoder;
 public:
    
     AccessType get_mem_acc_type(){return mem_acc_type;}
     bool is_oper_branch(){return is_branch;}
+    uint32_t get_br_target_addr() const{  if (is_branch) return branch_addr; else  throw  1;};
+    void set_br_target_addr(uint32_t addr) {branch_addr = addr; if (!is_branch ) throw 1;};
+    
     Oper() = default;
     Oper(OperName name, OperType type);
     virtual void calc_imm(uint32_t instr);
@@ -276,7 +280,13 @@ private:
     Register rs2;
     bool br_is_taken =false;
     friend class Decoder;
+    friend void Executors::MainInstrExecutorBGE(Oper *op, DE *de);
+    friend void Executors::MainInstrExecutorBGEU(Oper *op, DE *de);
+    friend void Executors::MainInstrExecutorBEQ(Oper *op, DE *de);
+    friend void Executors::MainInstrExecutorBNE(Oper *op, DE *de);
+    friend void Executors::MainInstrExecutorBLT(Oper *op, DE *de);
     friend void Executors::MainInstrExecutorBLTU(Oper *op, DE *de);
+    
 public:
     void calc_imm(uint32_t instr);
     uint32_t get_imm() const { return imm; }

@@ -51,11 +51,11 @@ Register HazartUnit::hazart_in_decode(Register rs)
     
 }
 
-void HazartUnit::branch_hazart(Oper *oper, uint32_t pc)
+void HazartUnit::branch_hazart(Oper *oper)
 {
    WF * wf = wf_cell.get_store_ptr();
    wf->is_jump = true;
-   wf->pc_jump = static_cast<int32_t >(oper->get_imm()) + static_cast<int32_t >(pc);
+   wf->pc_jump = static_cast<int32_t >(oper->get_br_target_addr());
    FD * fd = fd_cell.get_store_ptr();
    fd->is_hazard_stall = true;
    DE* de = de_cell.get_store_ptr();

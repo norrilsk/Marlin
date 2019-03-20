@@ -132,6 +132,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     op->opcode = opcode;
     op->is_branch = is_branch;
     op->mem_acc_type =  mem_acc_type;
+    op->branch_addr = 0;
     op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
@@ -160,6 +161,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
     case 0b1100111:
         is_branch = true;
         name = OPER_NAME_JALR;
+        executor = &(Executors::MainInstrExecutorJALR);
         if (funct3 != 0)
             print_and_raise_error(instr);
         type = OPER_TYPE_I;
@@ -171,15 +173,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         {
         case 0b000:
             name = OPER_NAME_BEQ;
+            executor = &(Executors::MainInstrExecutorBEQ);
             break;
         case 0b001:
             name = OPER_NAME_BNE;
+            executor = &(Executors::MainInstrExecutorBNE);
             break;
         case 0b100:
             name = OPER_NAME_BLT;
+            executor = &(Executors::MainInstrExecutorBLT);
             break;
         case 0b101:
             name = OPER_NAME_BGE;
+            executor = &(Executors::MainInstrExecutorBGE);
             break;
         case 0b110:
             name = OPER_NAME_BLTU;
@@ -187,6 +193,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             break;
         case 0b111:
             name = OPER_NAME_BGEU;
+            executor = &(Executors::MainInstrExecutorBGEU);
             break;
         default:
             print_and_raise_error(instr);
