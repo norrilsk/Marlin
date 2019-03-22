@@ -284,7 +284,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
                 default:
                     print_and_raise_error(instr);
             }
-            print_and_raise_error(instr);
+            break;
         case 0b000:
             type = OPER_TYPE_I;
             name = OPER_NAME_ADDI;

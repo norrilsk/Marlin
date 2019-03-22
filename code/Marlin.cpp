@@ -94,6 +94,7 @@ void Marlin::execute()
     oper->execute(de);
     if ( oper->is_oper_branch() &&
         (OPER_TYPE_J == oper->get_type() ||
+        OPER_TYPE_I == oper->get_type()  ||
             (OPER_TYPE_B == oper->get_type() && dynamic_cast<OperB*>(oper)->oper_br_is_taken())))
     {
             hazartUnit.branch_hazart(oper);

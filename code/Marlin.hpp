@@ -29,7 +29,7 @@ private:
     Cell <FD> fd_cell; //fetch-decode cell
     Cell <DE> de_cell; //decode-execute cell
     Cell <EM> em_cell; //execute-memory access cell
-    Cell <MW> mw_cell; //meory access - write back cell
+    Cell <MW> mw_cell; //memory access - write back cell
     HazartUnit hazartUnit;
     Decoder decoder;
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
