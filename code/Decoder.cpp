@@ -26,9 +26,10 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     uint32_t funct3 = (instr >> 12) & 0b0111u;
     uint32_t funct7 = (instr >> 25) &0b01111111u;
     uint32_t opcode = instr & 0b1111111u;
-    uint32_t num_rs1 =(instr >> 15)&0b011111u;
-    uint32_t num_rs2 = (instr >> 20) &0b011111u;
-    uint32_t num_rd = (instr >> 7) &0b011111u;
+    RegName num_rs1 = static_cast<RegName>((instr >> 15)&0b011111u);
+    RegName num_rs2 = static_cast<RegName>((instr >> 20) &0b011111u);
+    RegName num_rd = static_cast<RegName>((instr >> 7) &0b011111u);
+    
     recognize_oper(opcode, funct3, funct7);
    
     switch (type)
