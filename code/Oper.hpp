@@ -116,37 +116,37 @@ enum RegName
 
 namespace Executors
 {
-  void MainInstrExecutorLUI(Oper *op, DE *de);
-  void MainInstrExecutorAUIPC(Oper *op, DE *de);
-  void MainInstrExecutorJAL(Oper *op, DE *de);
-  void MainInstrExecutorJALR(Oper *op, DE *de);
-  void MainInstrExecutorBEQ(Oper *op, DE *de);
-  void MainInstrExecutorBNE(Oper *op, DE *de);
-  void MainInstrExecutorBLT(Oper *op, DE *de);
-  void MainInstrExecutorBGE(Oper *op, DE *de);
-  void MainInstrExecutorBLTU(Oper *op, DE *de);
-  void MainInstrExecutorBGEU(Oper *op, DE *de);
-  void MainInstrExecutorStore(Oper *op, DE *de); //SW SH SB
-  void MainInstrExecutorLoad(Oper *op, DE *de); //LW LH LHU LB LBU
-  void MainInstrExecutorADDI(Oper *op, DE *de);
-  void MainInstrExecutorSLTI(Oper *op, DE *de);
-  void MainInstrExecutorSLTIU(Oper *op, DE *de);
-  void MainInstrExecutorXORI(Oper *op, DE *de);
-  void MainInstrExecutorORI(Oper *op, DE *de);
-  void MainInstrExecutorANDI(Oper *op, DE *de);
-  void MainInstrExecutorSLLI(Oper *op, DE *de);
-  void MainInstrExecutorSRLI(Oper *op, DE *de);
-  void MainInstrExecutorSRAI(Oper *op, DE *de);
-  void MainInstrExecutorADD(Oper *op, DE *de);
-  void MainInstrExecutorSUB(Oper *op, DE *de);
-  void MainInstrExecutorSLL(Oper *op, DE *de);
-  void MainInstrExecutorSLT(Oper *op, DE *de);
-  void MainInstrExecutorSLTU(Oper *op, DE *de);
-  void MainInstrExecutorXOR(Oper *op, DE *de);
-  void MainInstrExecutorSRL(Oper *op, DE *de);
-  void MainInstrExecutorSRA(Oper *op, DE *de);
-  void MainInstrExecutorOR(Oper *op, DE *de);
-  void MainInstrExecutorAND(Oper *op, DE *de);
+  void MainInstrExecutorLUI(Oper *op);
+  void MainInstrExecutorAUIPC(Oper *op);
+  void MainInstrExecutorJAL(Oper *op);
+  void MainInstrExecutorJALR(Oper *op);
+  void MainInstrExecutorBEQ(Oper *op);
+  void MainInstrExecutorBNE(Oper *op);
+  void MainInstrExecutorBLT(Oper *op);
+  void MainInstrExecutorBGE(Oper *op);
+  void MainInstrExecutorBLTU(Oper *op);
+  void MainInstrExecutorBGEU(Oper *op);
+  void MainInstrExecutorStore(Oper *op ); //SW SH SB
+  void MainInstrExecutorLoad(Oper *op ); //LW LH LHU LB LBU
+  void MainInstrExecutorADDI(Oper *op );
+  void MainInstrExecutorSLTI(Oper *op );
+  void MainInstrExecutorSLTIU(Oper *op );
+  void MainInstrExecutorXORI(Oper *op );
+  void MainInstrExecutorORI(Oper *op );
+  void MainInstrExecutorANDI(Oper *op );
+  void MainInstrExecutorSLLI(Oper *op );
+  void MainInstrExecutorSRLI(Oper *op );
+  void MainInstrExecutorSRAI(Oper *op );
+  void MainInstrExecutorADD(Oper *op );
+  void MainInstrExecutorSUB(Oper *op );
+  void MainInstrExecutorSLL(Oper *op );
+  void MainInstrExecutorSLT(Oper *op );
+  void MainInstrExecutorSLTU(Oper *op );
+  void MainInstrExecutorXOR(Oper *op );
+  void MainInstrExecutorSRL(Oper *op );
+  void MainInstrExecutorSRA(Oper *op );
+  void MainInstrExecutorOR(Oper *op );
+  void MainInstrExecutorAND(Oper *op );
 }
 
 class Register
@@ -170,13 +170,15 @@ class Oper
     OperType type = OPER_TYPE_NONE;
     OperName name = OPER_NAME_NONE;
     uint32_t opcode;
+    uint32_t pc;
     AccessType mem_acc_type = ACCESS_TYPE_NONE;
     bool is_branch = false;
     uint32_t branch_addr = 0;
-    void(*main_executor)(Oper*, DE*) = nullptr;
+    void(*main_executor)(Oper*) = nullptr;
     friend class Decoder;
 public:
-   
+    uint32_t get_pc() const{ return pc;}
+    void set_pc(uint32_t pc) {this->pc =pc;}
     AccessType get_mem_acc_type(){return mem_acc_type;}
     bool is_oper_branch(){return is_branch;}
     uint32_t get_br_target_addr() const{  if (is_branch) return branch_addr; else  throw  1;};
@@ -192,7 +194,7 @@ public:
     virtual Register get_rs2() const{ throw 1; };
     virtual Register get_rd() const{throw 1; };
     virtual Register& get_rd_ref() { throw 1; };
-    void execute(DE*);
+    void execute();
     OperName get_name() const{ return name;}
     OperType get_type() const{ return type;}
     virtual ~Oper() = default ;
@@ -280,12 +282,12 @@ private:
     Register rs2;
     bool br_is_taken =false;
     friend class Decoder;
-    friend void Executors::MainInstrExecutorBGE(Oper *op, DE *de);
-    friend void Executors::MainInstrExecutorBGEU(Oper *op, DE *de);
-    friend void Executors::MainInstrExecutorBEQ(Oper *op, DE *de);
-    friend void Executors::MainInstrExecutorBNE(Oper *op, DE *de);
-    friend void Executors::MainInstrExecutorBLT(Oper *op, DE *de);
-    friend void Executors::MainInstrExecutorBLTU(Oper *op, DE *de);
+    friend void Executors::MainInstrExecutorBGE(Oper *op );
+    friend void Executors::MainInstrExecutorBGEU(Oper *op );
+    friend void Executors::MainInstrExecutorBEQ(Oper *op );
+    friend void Executors::MainInstrExecutorBNE(Oper *op );
+    friend void Executors::MainInstrExecutorBLT(Oper *op );
+    friend void Executors::MainInstrExecutorBLTU(Oper *op );
     
 public:
     void calc_imm(uint32_t instr);

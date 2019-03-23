@@ -34,11 +34,11 @@ OperJ::OperJ(OperName name) : Oper(name, OPER_TYPE_J)
 
 }
 
-void Oper::execute(DE* de)
+void Oper::execute()
 {
     if (this->main_executor)
     {
-        main_executor(this, de);
+        main_executor(this);
     }
     else
     {

@@ -24,11 +24,6 @@ Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path
     mmu.write_to_mem(&argc, sp.get_value(),4);
     regfile.write_reg(sp);
     
-   
-    
-    
-    
-    
     
     WF* wf = fetch_cell.get_store_ptr();
     wf->pc = static_cast<uint32_t >(elf.get_entry32());
@@ -85,6 +80,7 @@ void Marlin::decode()
     }
     Oper* op;
     op = decoder.decode32i(fd->instr, regfile);
+    op->set_pc(fd->pc);
     if (de_cell.is_stop())
     {
         //it means that registers are not ready now, we need to wait
@@ -106,7 +102,7 @@ void Marlin::execute()
             hazartUnit.fix_dirtness(oper);
         return;
     }
-    oper->execute(de);
+    oper->execute();
     if ( oper->is_oper_branch() &&
         (OPER_TYPE_J == oper->get_type() ||
         OPER_TYPE_I == oper->get_type()  ||
