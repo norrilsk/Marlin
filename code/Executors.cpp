@@ -387,3 +387,9 @@ void Executors::MainInstrExecutorJALR(Oper *op )
     Register& rd = oper->get_rd_ref();
     rd.set_value(op->get_pc()+4);
 }
+
+void Executors::MainInstrExecutorECALL(Oper *op)
+{
+    //TODO: write something there;
+    (void)op;
+}

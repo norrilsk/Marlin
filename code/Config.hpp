@@ -10,17 +10,22 @@ private:
     uint64_t memory_size = page_size* 1024;
     uint32_t pipeline_stages = 0; 
     std::string path_to_log;
+    std::string path_to_trace;
     uint64_t  num_regs =0;
     bool marlin_log = true;
     Log::Loger log;
+    Log::Loger trace;
+    bool dump_trace = false;
    
 public:
-    uint64_t get_mem_size(){ return memory_size;};
-    uint64_t get_page_size(){ return page_size;};
-    uint64_t get_num_regs(){return num_regs;};
-    uint32_t get_num_of_pipeline_stages() {return pipeline_stages;}
-    bool get_log_marlin() {return marlin_log;};
+    uint64_t get_mem_size() const{ return memory_size;};
+    uint64_t get_page_size()const{ return page_size;};
+    uint64_t get_num_regs()const{return num_regs;};
+    uint32_t get_num_of_pipeline_stages() const{return pipeline_stages;}
+    bool get_log_marlin() const{return marlin_log;};
+    bool is_dump_trace() const { return  dump_trace;}
     Log::Loger& get_log_ref() {return log;};
+    Log::Loger&  get_trace_ref() {return trace;}
     void read_config_file(std::string path);
     Config() = default;
     explicit Config(std::string path);

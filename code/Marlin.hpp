@@ -23,6 +23,7 @@ class Marlin
 private:
     Config config;
     Log::Loger& log;
+    Log::Loger& trace;
     MMU mmu;
     Regfile regfile;
     Cell <WF>  fetch_cell;
@@ -33,11 +34,13 @@ private:
     HazartUnit hazartUnit;
     Decoder decoder;
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
-//    uint64_t ic = 0;// instruction counter
+    uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;
-    
+    bool is_stop = false;
+    bool is_dump_trace = false;
     
     int32_t  sign_extend(int32_t num, int32_t size, ExtendType extend_type);
+    void dump_instruction(Oper* op);
     
     void fetch();
     void decode();

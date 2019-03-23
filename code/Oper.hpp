@@ -20,6 +20,7 @@ enum OperType
     OPER_TYPE_B,
     OPER_TYPE_U,
     OPER_TYPE_J,
+    OPER_TYPE_SYSTEM,
     OPER_TYPE_NONE
 };
 enum OperName
@@ -147,6 +148,7 @@ namespace Executors
   void MainInstrExecutorSRA(Oper *op );
   void MainInstrExecutorOR(Oper *op );
   void MainInstrExecutorAND(Oper *op );
+  void MainInstrExecutorECALL(Oper * op);
 }
 
 class Register

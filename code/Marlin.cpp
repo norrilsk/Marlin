@@ -2,7 +2,9 @@
 #include<iostream>
 
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
-                   mmu(config), regfile(config), hazartUnit(config, regfile, fd_cell,de_cell,em_cell,mw_cell,fetch_cell), decoder(config,hazartUnit)
+                   trace(config.get_trace_ref()), mmu(config), regfile(config),
+                   hazartUnit(config, regfile, fd_cell,de_cell,em_cell,mw_cell,fetch_cell), decoder(config,hazartUnit),
+                   is_dump_trace(config.is_dump_trace())
 {
     
     ElfMarlin elf(path_to_data.c_str(),  config.get_log_marlin());
@@ -33,7 +35,7 @@ Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path
 
 void Marlin::run()
 {
-    while(1)
+    while(!is_stop)
     {
         write_back();
         memory_access();
@@ -111,6 +113,11 @@ void Marlin::execute()
             hazartUnit.branch_hazart(oper);
     }
     
+    if (OPER_TYPE_SYSTEM == oper->get_type())
+    {
+        hazartUnit.exit_call(oper);
+    }
+    
     em->pc = de->pc;
     em->op = de->op;
     em->is_stall = de->is_stall;
@@ -185,6 +192,13 @@ void Marlin::write_back()
     {
         regfile.write_reg(oper->get_rd());
     }
+    ic++;
+    if (is_dump_trace)
+    {
+        dump_instruction(oper);
+    }
+    if (OPER_NAME_ECALL == oper->get_name())
+        is_stop = true;
 }
 
 
@@ -213,4 +227,11 @@ int32_t Marlin::sign_extend(int32_t n, int32_t size, ExtendType extend_type)
     }
     else
         throw 1;
+}
+
+void Marlin::dump_instruction(Oper *op)
+{
+    (void)op;
+    //TODO: Напишите код здесь
+    log <<std::string("SSSSS");
 }

@@ -51,6 +51,7 @@ private:
     CyclededArray<OperS> s_op_arr;
     CyclededArray<OperU> u_op_arr;
     CyclededArray<OperJ> j_op_arr;
+    CyclededArray<Oper> sys_op_arr;
     void (*executor)(Oper*) =nullptr;
     uint32_t instr;
     void recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7);

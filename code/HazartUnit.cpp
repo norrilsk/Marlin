@@ -96,6 +96,14 @@ void HazartUnit::fix_dirtness(Oper *op)
         regfile.virtual_write_reg(op->get_rd());
     }
 }
+void HazartUnit::exit_call(Oper *ecall)
+{
+    (void)ecall;
+    wf_cell.add_stop_count(5);
+    fd_cell.add_stop_count(5);
+    de_cell.add_stop_count(5);
+    de_cell.phase2->is_hazard_stall= true;
+}
 
 HazartUnit::~HazartUnit()
 {

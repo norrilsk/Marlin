@@ -4,6 +4,11 @@
 Config::Config(std::string path)
 {
     read_config_file(path);
+    if (dump_trace)
+        trace.open(path_to_trace);
+    if (marlin_log)
+        log.open(path_to_log);
+    
 }
 
 
@@ -74,9 +79,32 @@ void Config::read_config_file(std::string path)
             }
             throw -1;
         }
+        
+        if (!name.compare(0,10,"Dump trace"))
+        {
+            if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
+                || !value.compare(0,4,"TRUE"))
+            {
+                dump_trace = true;
+                continue;
+            }
+            if (!value.compare(0,5,"False") || !value.compare(0,5,"False")
+                || !value.compare(0,5,"FALSE"))
+            {
+                dump_trace = false;
+                continue;
+            }
+            throw -1;
+        }
+        
         if (!name.compare(0,8,"Log path"))
         {
             path_to_log = value;
+            continue;
+        }
+        if (!name.compare(0,10,"Trace path"))
+        {
+            path_to_trace = value;
             continue;
         }
         

@@ -18,6 +18,8 @@ void Loger::open(std::string path)
     checknull();
     if (this->path != path )
         this->path = path;
+    if (stream->is_open())
+        stream->close();
     stream->open(path);
     if (!stream->is_open())
         throw -3;
@@ -60,10 +62,10 @@ void Loger::endl()
     checknull();
     *stream << std::endl;
 }
-Loger& Loger::operator<<(const std::string &mess)
+Loger& Loger::operator<<(const std::string &mess1)
 {
     checknull();
-    *stream << mess;
+    *stream << mess1;
     return *this;
 }
 

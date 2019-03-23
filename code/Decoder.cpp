@@ -2,7 +2,8 @@
 #include "Marlin.hpp"
 
 Decoder::Decoder(Config& config, HazartUnit& hz) :config(config), hazartUnit(hz) , pipeline_size(config.get_num_of_pipeline_stages()),
-                                i_op_arr(pipeline_size), b_op_arr(pipeline_size), r_op_arr(pipeline_size), s_op_arr(pipeline_size), u_op_arr(pipeline_size), j_op_arr(pipeline_size)
+                                i_op_arr(pipeline_size), b_op_arr(pipeline_size), r_op_arr(pipeline_size), s_op_arr(pipeline_size),
+                                u_op_arr(pipeline_size), j_op_arr(pipeline_size), sys_op_arr(pipeline_size)
 {
 
 };
@@ -130,6 +131,9 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op_j = j_op_arr.get_next();
         op = dynamic_cast<Oper*>(op_j);
         op_j->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
+        break;
+    case OPER_TYPE_SYSTEM :
+        op = sys_op_arr.get_next();
         break;
     default:
         op = new Oper;
@@ -428,6 +432,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             }
             break;
         default:
+            print_and_raise_error(instr);
+        }
+        break;
+    case 0b1110011:
+        type = OPER_TYPE_SYSTEM;
+        if (instr == 0b1110011)
+        {
+    
+            name = OPER_NAME_ECALL;
+            executor = &(Executors::MainInstrExecutorECALL);
+        }
+        else
+        {
             print_and_raise_error(instr);
         }
         break;

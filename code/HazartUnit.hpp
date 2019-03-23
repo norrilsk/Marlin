@@ -24,6 +24,7 @@ public:
     HazartUnit(Config& , Regfile&, Cell <FD>&,  Cell <DE>&, Cell <EM>&, Cell <MW>&, Cell <WF>& );
     Register hazart_in_decode(Register rs, PipelineStage need_value_on);
     void branch_hazart(Oper* oper);
+    void exit_call(Oper* ecall);
     ~HazartUnit();
 };
 #endif
