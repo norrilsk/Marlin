@@ -5,7 +5,7 @@ using namespace Log;
 Log::Loger::Loger():path(def_path)
 {
     stream = new std::ofstream();
-    this->open(path);
+    //this->open(path);
 }
 
 void Loger::checknull()

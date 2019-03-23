@@ -233,5 +233,5 @@ void Marlin::dump_instruction(Oper *op)
 {
     (void)op;
     //TODO: Напишите код здесь
-    log <<std::string("SSSSS");
+    //trace <<std::string("SSiS")<<Log::endl;
 }
