@@ -1,7 +1,6 @@
 #include "Marlin.hpp"
 #include<iostream>
 
-
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
                    mmu(config), regfile(config), hazartUnit(config, regfile, fd_cell,de_cell,em_cell,mw_cell,fetch_cell), decoder(config,hazartUnit)
 {
@@ -18,8 +17,18 @@ Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path
     
     //we do not have OS, so we have to initialize SP
     Register sp =regfile.get_reg(REGISTER_NAME_SP, ACCESS_TYPE_WRITE);
-    sp.set_value(config.get_mem_size() - 1);
+    sp.set_value(config.get_mem_size() - 5);
+    
+    // TODO: we have to initialize sp pointing to argc , argv
+    uint32_t argc = 0;
+    mmu.write_to_mem(&argc, sp.get_value(),4);
     regfile.write_reg(sp);
+    
+   
+    
+    
+    
+    
     
     WF* wf = fetch_cell.get_store_ptr();
     wf->pc = static_cast<uint32_t >(elf.get_entry32());
@@ -53,7 +62,7 @@ void Marlin::fetch()
     FD* fd = fd_cell.get_store_ptr();
     uint32_t  instr;
     fd->is_stall =wf->is_stall || wf->is_hazard_stall;
-    if (fd->is_stall )
+    if (fd->is_stall || fd_cell.is_stop())
     {
         return;
     }
@@ -70,12 +79,18 @@ void Marlin::decode()
     FD* fd = fd_cell.get_load_ptr();
     DE* de = de_cell.get_store_ptr();
     de->is_stall = fd->is_stall || fd->is_hazard_stall;
-    if(de->is_stall)
+    if(de->is_stall || de_cell.is_stop())
     {
         return;
     }
     Oper* op;
     op = decoder.decode32i(fd->instr, regfile);
+    if (de_cell.is_stop())
+    {
+        //it means that registers are not ready now, we need to wait
+        // and fix regfile
+        hazartUnit.fix_dirtness(op);
+    }
     de->op = op;
     de->pc = fd->pc;
 }
@@ -85,7 +100,7 @@ void Marlin::execute()
     EM* em = em_cell.get_store_ptr();
     em->is_stall = de->is_stall || de->is_hazard_stall;
     Oper* oper = de->op;
-    if(em->is_stall)
+    if(em->is_stall || em_cell.is_stop())
     {
         if (!de->is_stall  && de->is_hazard_stall)
             hazartUnit.fix_dirtness(oper);
@@ -110,7 +125,7 @@ void Marlin::memory_access()
     MW* mw = mw_cell.get_store_ptr();
     Oper* oper = em->op;
     mw->is_stall = em->is_stall || em->is_hazard_stall;
-    if (mw->is_stall)
+    if (mw->is_stall || mw_cell.is_stop())
     {
         if (!em->is_stall  && em->is_hazard_stall)
             hazartUnit.fix_dirtness(oper);

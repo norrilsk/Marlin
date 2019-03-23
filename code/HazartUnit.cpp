@@ -9,7 +9,7 @@ HazartUnit::HazartUnit(Config& config, Regfile& regfile, Cell <FD>& fd_cell, Cel
     (void)this->de_cell.phase1;
 }
 
-Register HazartUnit::hazart_in_decode(Register rs)
+Register HazartUnit::hazart_in_decode(Register rs, PipelineStage need_value_on)
 {
     DE* de = de_cell.get_load_ptr();
     bool stall = de->is_stall || de->is_hazard_stall;
@@ -25,7 +25,24 @@ Register HazartUnit::hazart_in_decode(Register rs)
         if (rd.get_name() == rs.get_name())
         {
             if (is_oper_load(oper))
-                throw 1;// unsupported yet 
+            {
+                if (PIPELINE_STAGE_EXECUTE == need_value_on)
+                {
+                    //stop machine!!
+                    stops++;
+                    bypasses_wb_ex++;
+                    fd_cell.add_stop_count(1);
+                    wf_cell.add_stop_count(1);
+                    em_cell.phase1->is_hazard_stall =true;
+                    return rs;
+                }
+                else if (PIPELINE_STAGE_MEMORY == need_value_on)
+                {
+                    // unsupported yet
+                    throw 1;
+                }
+                throw 1;
+            }
             bypasses_mem_ex++;
             return rd;
         }

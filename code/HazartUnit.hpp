@@ -9,6 +9,7 @@ class HazartUnit
     //statistics
     uint32_t bypasses_mem_ex = 0;
     uint32_t bypasses_wb_ex = 0;
+    uint32_t stops = 0;
     Config& config;
     Regfile& regfile;
     Cell <FD>& fd_cell; //fetch-decode cell
@@ -21,7 +22,7 @@ class HazartUnit
 public:
     void fix_dirtness(Oper* op);
     HazartUnit(Config& , Regfile&, Cell <FD>&,  Cell <DE>&, Cell <EM>&, Cell <MW>&, Cell <WF>& );
-    Register hazart_in_decode(Register rs);
+    Register hazart_in_decode(Register rs, PipelineStage need_value_on);
     void branch_hazart(Oper* oper);
     ~HazartUnit();
 };

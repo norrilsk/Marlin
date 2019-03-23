@@ -23,6 +23,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     executor = nullptr;
     acc_size = 0;
     is_branch = false;
+
     uint32_t funct3 = (instr >> 12) & 0b0111u;
     uint32_t funct7 = (instr >> 25) &0b01111111u;
     uint32_t opcode = instr & 0b1111111u;
@@ -31,7 +32,6 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     RegName num_rd = static_cast<RegName>((instr >> 7) &0b011111u);
     
     recognize_oper(opcode, funct3, funct7);
-   
     switch (type)
     {
     case OPER_TYPE_R:
@@ -39,7 +39,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         
         if (reg.is_dirty(num_rs1))
         {
-            op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -48,12 +48,13 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         
         if (reg.is_dirty(num_rs2))
         {
-            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
             op_r->rs2 = reg.get_reg(num_rs2);
         }
+        
         op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         op = dynamic_cast<Oper*>(op_r);
         break;
@@ -64,7 +65,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         
         if (reg.is_dirty(num_rs1))
         {
-            op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -78,7 +79,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_s);
         if (reg.is_dirty(num_rs1))
         {
-            op_s->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_s->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -86,7 +87,14 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            if (ACCESS_TYPE_WRITE == mem_acc_type)
+            {
+                op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_MEMORY);
+            }
+            else
+            {
+                op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
+            }
         }
         else
         {
@@ -98,7 +106,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_b);
         if (reg.is_dirty(num_rs1))
         {
-            op_b->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_b->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -106,7 +114,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_b->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_b->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
