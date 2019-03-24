@@ -10,43 +10,38 @@
 #include"Decoder.hpp"
 #include "Cell.hpp"
 #include "HazartUnit.hpp"
+#include "Regfile.hpp"
 
-class Regfile
+enum ExtendType
 {
-private:
-    uint32_t num_regs = 0;
-    std::vector<Register> regs;
-    std::vector<int32_t> dirtiness;
-    Config& config;
-public:
-    Register get_reg(uint32_t num, AccessType acc = ACCESS_TYPE_READ);
-    Register& get_reg_ref(uint32_t num, AccessType acc = ACCESS_TYPE_READ);
-    int32_t is_dirty(uint32_t num){return dirtiness[num];}
-    void write_reg(Register reg );
-    explicit Regfile(Config& config);
-    ~Regfile() = default;
-    
+    EXTEND_TYPE_SIGN,
+    EXTEND_TYPE_ZERO
 };
-
 
 class Marlin
 {
 private:
     Config config;
     Log::Loger& log;
+    Log::Loger& trace;
     MMU mmu;
     Regfile regfile;
     Cell <WF>  fetch_cell;
     Cell <FD> fd_cell; //fetch-decode cell
     Cell <DE> de_cell; //decode-execute cell
     Cell <EM> em_cell; //execute-memory access cell
-    Cell <MW> mw_cell; //meory access - write back cell
+    Cell <MW> mw_cell; //memory access - write back cell
     HazartUnit hazartUnit;
     Decoder decoder;
-
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
-//    uint64_t ic = 0;// instruction counter
+    uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;
+    bool is_stop = false;
+    bool is_dump_trace = false;
+    
+    int32_t  sign_extend(int32_t num, int32_t size, ExtendType extend_type);
+    void dump_instruction(Oper* op);
+    
     void fetch();
     void decode();
     void execute();

@@ -4,6 +4,11 @@
 Config::Config(std::string path)
 {
     read_config_file(path);
+    if (dump_trace)
+        trace.open(path_to_trace);
+    if (marlin_log)
+        log.open(path_to_log);
+    
 }
 
 
@@ -27,6 +32,8 @@ std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
 void Config::read_config_file(std::string path)
 {
     std::ifstream input(path);
+    if (!input.is_open())
+        throw -3;
     std::string name, value;
     name.resize(256);
     value.resize(256);
@@ -72,9 +79,32 @@ void Config::read_config_file(std::string path)
             }
             throw -1;
         }
+        
+        if (!name.compare(0,10,"Dump trace"))
+        {
+            if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
+                || !value.compare(0,4,"TRUE"))
+            {
+                dump_trace = true;
+                continue;
+            }
+            if (!value.compare(0,5,"False") || !value.compare(0,5,"False")
+                || !value.compare(0,5,"FALSE"))
+            {
+                dump_trace = false;
+                continue;
+            }
+            throw -1;
+        }
+        
         if (!name.compare(0,8,"Log path"))
         {
             path_to_log = value;
+            continue;
+        }
+        if (!name.compare(0,10,"Trace path"))
+        {
+            path_to_trace = value;
             continue;
         }
         

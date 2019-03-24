@@ -2,6 +2,15 @@
 #define MARLIN_CELL_HPP
 #include <stdexcept>
 
+enum PipelineStage
+{
+    PIPELINE_STAGE_FETCH,
+    PIPELINE_STAGE_DECODE,
+    PIPELINE_STAGE_EXECUTE,
+    PIPELINE_STAGE_MEMORY,
+    PIPELINE_STAGE_WRITE,
+    PIPELINE_STAGE_NONE
+};
 //predecl
 class Oper;
 struct WF // special cell for Fetch take data from
@@ -86,12 +95,15 @@ private:
     T* phase1;
     T* phase2;
     friend class HazartUnit;
+    uint32_t  stop_count = 0;
 public:
     void update();
     T* get_store_ptr(){return phase1;}
     T* get_load_ptr(){return phase2;}
     void store(T* t);
     void load(T* t);
+    void add_stop_count(uint32_t count){stop_count+=count;}
+    bool is_stop(){return (stop_count > 0);}
     Cell();
     ~Cell();
 };
@@ -124,6 +136,11 @@ template<typename T>
 void Cell<T>::update()
 {
     T* temp;
+    if (stop_count > 0)
+    {
+        stop_count--;
+        return;
+    }
     temp = phase1;
     phase1 = phase2;
     phase1->clear();

@@ -2,7 +2,8 @@
 #include "Marlin.hpp"
 
 Decoder::Decoder(Config& config, HazartUnit& hz) :config(config), hazartUnit(hz) , pipeline_size(config.get_num_of_pipeline_stages()),
-                                i_op_arr(pipeline_size), b_op_arr(pipeline_size), r_op_arr(pipeline_size), s_op_arr(pipeline_size), u_op_arr(pipeline_size), j_op_arr(pipeline_size)
+                                i_op_arr(pipeline_size), b_op_arr(pipeline_size), r_op_arr(pipeline_size), s_op_arr(pipeline_size),
+                                u_op_arr(pipeline_size), j_op_arr(pipeline_size), sys_op_arr(pipeline_size)
 {
 
 };
@@ -23,14 +24,15 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     executor = nullptr;
     acc_size = 0;
     is_branch = false;
+
     uint32_t funct3 = (instr >> 12) & 0b0111u;
     uint32_t funct7 = (instr >> 25) &0b01111111u;
     uint32_t opcode = instr & 0b1111111u;
-    uint32_t num_rs1 =(instr >> 15)&0b011111u;
-    uint32_t num_rs2 = (instr >> 20) &0b011111u;
-    uint32_t num_rd = (instr >> 7) &0b011111u;
+    RegName num_rs1 = static_cast<RegName>((instr >> 15)&0b011111u);
+    RegName num_rs2 = static_cast<RegName>((instr >> 20) &0b011111u);
+    RegName num_rd = static_cast<RegName>((instr >> 7) &0b011111u);
+    
     recognize_oper(opcode, funct3, funct7);
-   
     switch (type)
     {
     case OPER_TYPE_R:
@@ -38,7 +40,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         
         if (reg.is_dirty(num_rs1))
         {
-            op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_r->rs1  = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -47,22 +49,24 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         
         if (reg.is_dirty(num_rs2))
         {
-            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_r->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
             op_r->rs2 = reg.get_reg(num_rs2);
         }
+        
         op_r->rd =reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         op = dynamic_cast<Oper*>(op_r);
         break;
     case OPER_TYPE_I:
         op_i = i_op_arr.get_next();
+        op_i->load_size = acc_size;
         op = dynamic_cast<Oper*>(op_i);
         
         if (reg.is_dirty(num_rs1))
         {
-            op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_i->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -72,10 +76,11 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         break;
     case OPER_TYPE_S:
         op_s = s_op_arr.get_next();
+        op_s->store_size = acc_size;
         op = dynamic_cast<Oper*>(op_s);
         if (reg.is_dirty(num_rs1))
         {
-            op_s->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_s->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -83,7 +88,14 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            if (ACCESS_TYPE_WRITE == mem_acc_type)
+            {
+                op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_MEMORY);
+            }
+            else
+            {
+                op_s->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
+            }
         }
         else
         {
@@ -95,7 +107,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_b);
         if (reg.is_dirty(num_rs1))
         {
-            op_b->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1));
+            op_b->rs1 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs1),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -103,7 +115,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         }
         if (reg.is_dirty(num_rs2))
         {
-            op_b->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2));
+            op_b->rs2 = hazartUnit.hazart_in_decode(reg.get_reg(num_rs2),PIPELINE_STAGE_EXECUTE);
         }
         else
         {
@@ -120,6 +132,9 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
         op = dynamic_cast<Oper*>(op_j);
         op_j->rd = reg.get_reg(num_rd,ACCESS_TYPE_WRITE);
         break;
+    case OPER_TYPE_SYSTEM :
+        op = sys_op_arr.get_next();
+        break;
     default:
         op = new Oper;
         print_and_raise_error(instr);
@@ -130,6 +145,7 @@ Oper* Decoder::decode32i(uint32_t instr, Regfile& reg)
     op->opcode = opcode;
     op->is_branch = is_branch;
     op->mem_acc_type =  mem_acc_type;
+    op->branch_addr = 0;
     op->calc_imm(instr); //may be it should be moved to execute stage
 
     return op;
@@ -150,11 +166,15 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         executor = &(Executors::MainInstrExecutorAUIPC);
         break;
     case 0b1101111:
+        is_branch =true;
         name = OPER_NAME_JAL;
         type = OPER_TYPE_J;
+        executor = &(Executors::MainInstrExecutorJAL);
         break;
     case 0b1100111:
+        is_branch = true;
         name = OPER_NAME_JALR;
+        executor = &(Executors::MainInstrExecutorJALR);
         if (funct3 != 0)
             print_and_raise_error(instr);
         type = OPER_TYPE_I;
@@ -166,15 +186,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         {
         case 0b000:
             name = OPER_NAME_BEQ;
+            executor = &(Executors::MainInstrExecutorBEQ);
             break;
         case 0b001:
             name = OPER_NAME_BNE;
+            executor = &(Executors::MainInstrExecutorBNE);
             break;
         case 0b100:
             name = OPER_NAME_BLT;
+            executor = &(Executors::MainInstrExecutorBLT);
             break;
         case 0b101:
             name = OPER_NAME_BGE;
+            executor = &(Executors::MainInstrExecutorBGE);
             break;
         case 0b110:
             name = OPER_NAME_BLTU;
@@ -182,6 +206,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             break;
         case 0b111:
             name = OPER_NAME_BGEU;
+            executor = &(Executors::MainInstrExecutorBGEU);
             break;
         default:
             print_and_raise_error(instr);
@@ -189,7 +214,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
         break;
     case 0b0000011:
         type = OPER_TYPE_I;
-        executor = &(Executors::MainInstrExecutorStoreLoad);
+        executor = &(Executors::MainInstrExecutorLoad);
         switch (funct3)
         {
         case 0b000:
@@ -229,19 +254,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             name = OPER_NAME_SB;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 1;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         case 0b001:
             name = OPER_NAME_SH;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 2;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         case 0b010:
             name = OPER_NAME_SW;
             mem_acc_type = ACCESS_TYPE_WRITE;
             acc_size = 4;
-            executor = &(Executors::MainInstrExecutorStoreLoad);
+            executor = &(Executors::MainInstrExecutorStore);
             break;
         default:
             print_and_raise_error(instr);
@@ -271,7 +296,7 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
                 default:
                     print_and_raise_error(instr);
             }
-            print_and_raise_error(instr);
+            break;
         case 0b000:
             type = OPER_TYPE_I;
             name = OPER_NAME_ADDI;
@@ -407,6 +432,19 @@ void Decoder::recognize_oper(uint32_t opcode, uint32_t funct3, uint32_t funct7)
             }
             break;
         default:
+            print_and_raise_error(instr);
+        }
+        break;
+    case 0b1110011:
+        type = OPER_TYPE_SYSTEM;
+        if (instr == 0b1110011)
+        {
+    
+            name = OPER_NAME_ECALL;
+            executor = &(Executors::MainInstrExecutorECALL);
+        }
+        else
+        {
             print_and_raise_error(instr);
         }
         break;
