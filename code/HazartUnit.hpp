@@ -9,6 +9,7 @@ class HazartUnit
     //statistics
     uint32_t bypasses_mem_ex = 0;
     uint32_t bypasses_wb_ex = 0;
+    uint32_t branches = 0;
     uint32_t stops = 0;
     Config& config;
     Regfile& regfile;
@@ -25,6 +26,7 @@ public:
     Register hazart_in_decode(Register rs, PipelineStage need_value_on);
     void branch_hazart(Oper* oper);
     void exit_call(Oper* ecall);
+    void dump_stat();
     ~HazartUnit();
 };
 #endif
