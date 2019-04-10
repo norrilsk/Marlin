@@ -2,6 +2,8 @@
 #define MARLIN_MARLIN_H
 
 #include<string>
+#include <sstream>
+#include <iomanip>
 
 #include"ElfMarlin.hpp"
 #include"MMU.hpp"
@@ -41,7 +43,9 @@ private:
     
     int32_t  sign_extend(int32_t num, int32_t size, ExtendType extend_type);
     void dump_instruction(Oper* op);
-    
+    std::string oper_name(OperName name);
+    std::string reg_name(RegName name);
+    std::string intToHex(int32_t i);
     void fetch();
     void decode();
     void execute();
