@@ -5,6 +5,7 @@ HazartUnit::HazartUnit(Config& config, Regfile& regfile, Cell <FD>& fd_cell, Cel
     config(config), regfile(regfile), fd_cell(fd_cell), de_cell(de_cell), em_cell(em_cell), mw_cell(mw_cell), wf_cell(wf_cell)
 {
     (void)this->config.get_page_size();
+    (void)this->mw_cell.phase1;
     (void)this->fd_cell.phase1;
     (void)this->de_cell.phase1;
 }

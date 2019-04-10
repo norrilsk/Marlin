@@ -245,6 +245,18 @@ int32_t Marlin::sign_extend(int32_t n, int32_t size, ExtendType extend_type)
     else
         throw 1;
 }
+
+
+std::string Marlin::intToHex( int32_t i )
+{
+    std::stringstream stream;
+    stream << "0x"
+           << std::setfill ('0') << std::setw(sizeof(int32_t)*2)
+           << std::hex << i;
+    return stream.str();
+}
+
+
 void Marlin::dump_stat()
 {
     log << std::string("ic : ")<<std::to_string(this->ic)<<Log::endl;
@@ -253,11 +265,318 @@ void Marlin::dump_stat()
     log << std::string("KIPS : ") << std::to_string(static_cast<double>(ic*1000000)/(execution_time)) << Log::endl;
     hazartUnit.dump_stat();
 }
+
 void Marlin::dump_instruction(Oper *op)
 {
+    //trace << std::to_string(op->get_name())<< " "<< std::to_string(op->get_pc()) << " " << Log::endl;
     (void)op;
     
     trace << std::to_string(op->get_pc()) <<Log::endl;
     //TODO: Напишите код здесь
-    //trace <<std::string("SSiS")<<Log::endl;
+    std::string str_pc(12 - intToHex(op->get_pc()).length(), ' ');
+    std::string str_name(12 - oper_name(op->get_name()).length(), ' ');
+    trace << intToHex(op->get_pc()) << str_pc << oper_name(op->get_name()) << str_name;
+    if ((op->get_type() == OPER_TYPE_R) || (op->get_type() == OPER_TYPE_I)|| (op->get_type() == OPER_TYPE_S)|| (op->get_type() == OPER_TYPE_B))
+    {
+        std::string str_rs1(12 - reg_name(op->get_rs1().get_name()).length(), ' ');
+        trace << "rs1 " << reg_name(op->get_rs1().get_name())<< str_rs1;
+    }
+    else
+    {
+        std::string tmp(16, ' ');
+        trace << tmp;
+    }
+    if ((op->get_type() == OPER_TYPE_R)|| (op->get_type() == OPER_TYPE_S)|| (op->get_type() == OPER_TYPE_B))
+    {
+        std::string str_rs2(12 - reg_name(op->get_rs2().get_name()).length(), ' ');
+        trace << "rs2 "<< reg_name(op->get_rs2().get_name())<< str_rs2;
+    }
+    else
+    {
+        std::string tmp(16, ' ');
+        trace << tmp;
+    }
+    if ((op->get_type() == OPER_TYPE_R)|| (op->get_type() == OPER_TYPE_I)|| (op->get_type() == OPER_TYPE_U)|| (op->get_type() == OPER_TYPE_J))
+    {
+        std::string str_rd(12 - reg_name(op->get_rd().get_name()).length(), ' ');
+        trace << "rd "<<reg_name(op->get_rd().get_name())<< str_rd;
+    }
+    else
+    {
+        std::string tmp(15, ' ');
+        trace << tmp;
+    }
+    if ((op->get_type() == OPER_TYPE_I)|| (op->get_type() == OPER_TYPE_S)|| (op->get_type() == OPER_TYPE_B)|| (op->get_type() == OPER_TYPE_U)|| (op->get_type() == OPER_TYPE_J))
+    {
+        std::string str_imm(12 - intToHex(op->get_imm()).length(), ' ');
+        trace << "imm "<< intToHex(static_cast<int32_t>(op->get_imm()))<< str_imm;
+    }
+    else
+    {
+        std::string tmp(16, ' ');
+        trace << tmp;
+    }
+    trace << Log::endl;
+}
+
+std::string Marlin::reg_name(RegName name)
+{
+    std::string s_name = " no name ";
+
+    switch (name) {
+        case REGISTER_NAME_ZERO:
+            s_name = "zero";
+            break;
+        case REGISTER_NAME_RA:
+            s_name = "ra";
+            break;
+        case REGISTER_NAME_SP:
+            s_name = "sp";
+            break;
+        case REGISTER_NAME_GP:
+            s_name = "gp";
+            break;
+        case REGISTER_NAME_TP:
+            s_name = "tp";
+            break;
+        case REGISTER_NAME_T0:
+            s_name = "t0";
+            break;
+        case REGISTER_NAME_T1:
+            s_name = "t1";
+            break;
+        case REGISTER_NAME_T2:
+            s_name = "t2";
+            break;
+        case REGISTER_NAME_S0:
+            s_name = "s0";
+            break;
+        case REGISTER_NAME_S1:
+            s_name = "s1";
+            break;
+        case REGISTER_NAME_A0:
+            s_name = "a0";
+            break;
+        case REGISTER_NAME_A1:
+            s_name = "a1";
+            break;
+        case REGISTER_NAME_A2:
+            s_name = "a2";
+            break;
+        case REGISTER_NAME_A3:
+            s_name = "a3";
+            break;
+        case REGISTER_NAME_A4:
+            s_name = "a4";
+            break;
+        case REGISTER_NAME_A5:
+            s_name = "a5";
+            break;
+        case REGISTER_NAME_A6:
+            s_name = "a6";
+            break;
+        case REGISTER_NAME_A7:
+            s_name = "a7";
+            break;
+        case REGISTER_NAME_S2:
+            s_name = "s2";
+            break;
+        case REGISTER_NAME_S3:
+            s_name = "s3";
+            break;
+        case REGISTER_NAME_S4:
+            s_name = "s4";
+            break;
+        case REGISTER_NAME_S5:
+            s_name = "s5";
+            break;
+        case REGISTER_NAME_S6:
+            s_name = "s6";
+            break;
+        case REGISTER_NAME_S7:
+            s_name = "s7";
+            break;
+        case REGISTER_NAME_S8:
+            s_name = "s8";
+            break;
+        case REGISTER_NAME_S9:
+            s_name = "s9";
+            break;
+        case REGISTER_NAME_S10:
+            s_name = "s10";
+            break;
+        case REGISTER_NAME_S11:
+            s_name = "s11";
+            break;
+        case REGISTER_NAME_T3:
+            s_name = "t3";
+            break;
+        case REGISTER_NAME_T4:
+            s_name = "t4";
+            break;
+        case REGISTER_NAME_T5:
+            s_name = "t5";
+            break;
+        case REGISTER_NAME_T6:
+            s_name = "t6";
+            break;
+        case REGISTER_NAME_NONE:
+            s_name = "none";
+            break;
+    }
+    return s_name;
+}
+
+std::string Marlin::oper_name(OperName name)
+{
+    std::string s_name = " no name ";
+
+    switch (name)
+    {
+        case OPER_NAME_LUI:
+            s_name = "LUI";
+            break;
+        case OPER_NAME_AUIPC:
+            s_name = "AUIPC";
+            break;
+        case OPER_NAME_JAL:
+            s_name = "JAL";
+            break;
+        case OPER_NAME_JALR:
+            s_name = "JALR";
+            break;
+        case OPER_NAME_BEQ:
+            s_name = "BEQ";
+            break;
+        case OPER_NAME_BNE:
+            s_name = "BNE";
+            break;
+        case OPER_NAME_BLT:
+            s_name = "BLT";
+            break;
+        case OPER_NAME_BGE:
+            s_name = "BGE";
+            break;
+        case OPER_NAME_BLTU:
+            s_name = "BLTU";
+            break;
+        case OPER_NAME_BGEU:
+            s_name = "BGEU";
+            break;
+        case OPER_NAME_LB:
+            s_name = "LB";
+            break;
+        case OPER_NAME_LH:
+            s_name = "LH";
+            break;
+        case OPER_NAME_LW:
+            s_name = "LW";
+            break;
+        case OPER_NAME_LBU:
+            s_name = "LBU";
+            break;
+        case OPER_NAME_LHU:
+            s_name = "LHU";
+            break;
+        case OPER_NAME_SB:
+            s_name = "SB";
+            break;
+        case OPER_NAME_SH:
+            s_name = "SH";
+            break;
+        case OPER_NAME_SW:
+            s_name = "SW";
+            break;
+        case OPER_NAME_ADDI:
+            s_name = "ADDI";
+            break;
+        case OPER_NAME_SLTI:
+            s_name = "SLTI";
+            break;
+        case OPER_NAME_SLTIU:
+            s_name = "SLTIU";
+            break;
+        case OPER_NAME_XORI:
+            s_name = "XORI";
+            break;
+        case OPER_NAME_ORI:
+            s_name = "ORI";
+            break;
+        case OPER_NAME_ANDI:
+            s_name = "ANDI";
+            break;
+        case OPER_NAME_SLLI:
+            s_name = "SLLI";
+            break;
+        case OPER_NAME_SRLI:
+            s_name = "SRLI";
+            break;
+        case OPER_NAME_SRAI:
+            s_name = "SRAI";
+            break;
+        case OPER_NAME_ADD:
+            s_name = "ADD";
+            break;
+        case OPER_NAME_SUB:
+            s_name = "SUB";
+            break;
+        case OPER_NAME_SLL:
+            s_name = "SLL";
+            break;
+        case OPER_NAME_SLT:
+            s_name = "SLT";
+            break;
+        case OPER_NAME_SLTU:
+            s_name = "SLTU";
+            break;
+        case OPER_NAME_XOR:
+            s_name = "XOR";
+            break;
+        case OPER_NAME_SRL:
+            s_name = "SRL";
+            break;
+        case OPER_NAME_SRA:
+            s_name = "SRA";
+            break;
+        case OPER_NAME_OR:
+            s_name = "OR";
+            break;
+        case OPER_NAME_AND:
+            s_name = "AND";
+            break;
+        case OPER_NAME_FENCE:
+            s_name = "FENCE";
+            break;
+        case OPER_NAME_FENCE_I:
+            s_name = "FENCE_I";
+            break;
+        case OPER_NAME_ECALL:
+            s_name = "ECALL";
+            break;
+        case OPER_NAME_EBREAK:
+            s_name = "EBREAK";
+            break;
+        case OPER_NAME_CSRRW:
+            s_name = "CSRRW";
+            break;
+        case OPER_NAME_CSRRS:
+            s_name = "CSRRS";
+            break;
+        case OPER_NAME_CSRRC:
+            s_name = "CSRRC";
+            break;
+        case OPER_NAME_CSRRWI:
+            s_name = "CSRRWI";
+            break;
+        case OPER_NAME_CSRRSI:
+            s_name = "CSRRSI";
+            break;
+        case OPER_NAME_CSRRCI:
+            s_name = "CSRRCI";
+            break;
+        case OPER_NAME_NONE:
+            s_name = "NONE";
+            break;
+    }
+    return s_name;
 }
