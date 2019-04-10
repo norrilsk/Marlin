@@ -2,8 +2,12 @@
 #define MARLIN_MARLIN_H
 
 #include<string>
+
 #include <sstream>
 #include <iomanip>
+#include <chrono>
+#include <ctime>
+
 
 #include"ElfMarlin.hpp"
 #include"MMU.hpp"
@@ -40,12 +44,16 @@ private:
     uint64_t clocks = 0;
     bool is_stop = false;
     bool is_dump_trace = false;
-    
+    long int  execution_time;
     int32_t  sign_extend(int32_t num, int32_t size, ExtendType extend_type);
     void dump_instruction(Oper* op);
+
     std::string oper_name(OperName name);
     std::string reg_name(RegName name);
     std::string intToHex(int32_t i);
+
+    void dump_stat();
+
     void fetch();
     void decode();
     void execute();
