@@ -35,6 +35,10 @@ Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path
 
 void Marlin::run()
 {
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+
+    
     while(!is_stop)
     {
         write_back();
@@ -50,6 +54,19 @@ void Marlin::run()
         mw_cell.update();
         clocks++;
     }
+    end = std::chrono::system_clock::now();
+    
+    execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>
+        (end-start).count();
+
+    
+
+
+    if (this->config.get_log_marlin())
+    {
+        dump_stat();
+    }
+    
 }
 
 void Marlin::fetch()
@@ -228,10 +245,19 @@ int32_t Marlin::sign_extend(int32_t n, int32_t size, ExtendType extend_type)
     else
         throw 1;
 }
-
+void Marlin::dump_stat()
+{
+    log << std::string("ic : ")<<std::to_string(this->ic)<<Log::endl;
+    log << std::string("clocks : ")<< std::to_string(this->clocks)<<Log::endl;
+    log << std::string("execution time :")<<std::to_string(execution_time)<<std::string("ns")<<Log::endl;
+    log << std::string("KIPS : ") << std::to_string(static_cast<double>(ic*1000000)/(execution_time)) << Log::endl;
+    hazartUnit.dump_stat();
+}
 void Marlin::dump_instruction(Oper *op)
 {
     (void)op;
+    
+    trace << std::to_string(op->get_pc()) <<Log::endl;
     //TODO: Напишите код здесь
     //trace <<std::string("SSiS")<<Log::endl;
 }

@@ -77,7 +77,8 @@ void HazartUnit::branch_hazart(Oper *oper)
    fd->is_hazard_stall = true;
    DE* de = de_cell.get_store_ptr();
    de->is_hazard_stall = true;
-   
+    
+    branches++;
 }
 
 inline bool HazartUnit::is_oper_load(Oper* op)
@@ -103,6 +104,15 @@ void HazartUnit::exit_call(Oper *ecall)
     fd_cell.add_stop_count(5);
     de_cell.add_stop_count(5);
     de_cell.phase2->is_hazard_stall= true;
+}
+
+void HazartUnit::dump_stat()
+{
+    Log::Loger& log = config.get_log_ref();
+    log<<std::string("bypasses_wb_ex : ")<<std::to_string(this->bypasses_wb_ex)<<Log::endl;
+    log<<std::string("bypasses_mem_ex : ")<<std::to_string(this->bypasses_mem_ex)<<Log::endl;
+    log<<std::string("pipeline stops : ")<<std::to_string(this->stops)<<Log::endl;
+    log<<std::string("branches : ")<<std::to_string(this->branches)<<Log::endl;
 }
 
 HazartUnit::~HazartUnit()
