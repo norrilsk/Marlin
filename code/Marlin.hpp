@@ -17,6 +17,7 @@
 #include "Cell.hpp"
 #include "HazartUnit.hpp"
 #include "Regfile.hpp"
+#include "StoreQueue.hpp"
 
 enum ExtendType
 {
@@ -39,6 +40,7 @@ private:
     Cell <MW> mw_cell; //memory access - write back cell
     HazartUnit hazartUnit;
     Decoder decoder;
+    StoreQueue storeQueue;
     uint64_t op_mode = 0;// 1 -x32 2-x64(unsupported)
     uint64_t ic = 0;// instruction counter
     uint64_t clocks = 0;

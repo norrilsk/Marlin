@@ -5,7 +5,7 @@
 
 int main()
 {
-    Marlin marlin(std::string("../../tests/binary_RV32/empty_test")\
+    Marlin marlin(std::string("../../tests/binary_RV32/base_arithmetic_test")\
     , std::string("../../conf.txt"));
     marlin.run();
 }

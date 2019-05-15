@@ -1,8 +1,10 @@
 Page size : 4096
-Memory size : 4194304
+Memory size : 419430400
 Whole log : true
 Dump trace : true
 Register file size : 32
 Log path : ../../MarlinLog.txt
 Trace path : ../../trace.txt
 Pipeline stages num : 5
+Enable Store Queue: true
+Store Queue Size : 5

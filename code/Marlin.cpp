@@ -4,7 +4,7 @@
 Marlin::Marlin(std::string path_to_data, std::string path_to_conf ): config(path_to_conf), log(config.get_log_ref()),
                    trace(config.get_trace_ref()), mmu(config), regfile(config),
                    hazartUnit(config, regfile, fd_cell,de_cell,em_cell,mw_cell,fetch_cell), decoder(config,hazartUnit),
-                   is_dump_trace(config.is_dump_trace())
+                   storeQueue(config.get_sq_size(),mmu,config),is_dump_trace(config.is_dump_trace())
 {
     
     ElfMarlin elf(path_to_data.c_str(),  config.get_log_marlin());
@@ -52,6 +52,7 @@ void Marlin::run()
         de_cell.update();
         em_cell.update();
         mw_cell.update();
+        storeQueue.update();
         clocks++;
     }
     end = std::chrono::system_clock::now();
@@ -155,11 +156,18 @@ void Marlin::memory_access()
     OperType  op_type = oper->get_type();
     if ((ACCESS_TYPE_WRITE == op_acc_type )&&(OPER_TYPE_S == op_type))
     {
-        OperS* op_s = dynamic_cast<OperS*>(oper);
-        int32_t data = op_s->get_rs2().get_value();
-        uint64_t addr = static_cast<uint64_t>(op_s->get_store_addr());
-        uint64_t size = static_cast<uint64_t>(op_s->get_store_size());
-        mmu.write_to_mem(&data,addr,size);
+        if (config.is_sq_enabled())
+        {
+            storeQueue.push(oper);
+        }
+        else
+        {
+            OperS *op_s = dynamic_cast<OperS *>(oper);
+            int32_t data = op_s->get_rs2().get_value();
+            uint64_t addr = static_cast<uint64_t>(op_s->get_store_addr());
+            uint64_t size = static_cast<uint64_t>(op_s->get_store_size());
+            mmu.write_to_mem(&data, addr, size);
+        }
     }
     if ((ACCESS_TYPE_READ == op_acc_type) &&(OPER_TYPE_I == op_type))
     {
@@ -167,7 +175,16 @@ void Marlin::memory_access()
         int32_t data = 0;
         uint64_t addr = static_cast<uint64_t>(op_i->get_load_addr());
         uint64_t size = static_cast<uint64_t>(op_i->get_load_size());
-        mmu.read_from_mem(&data,addr,size);
+        if (config.is_sq_enabled())
+        {
+            data = static_cast<int32_t>(storeQueue.searchData(oper));
+        }
+        else
+        {
+            
+           
+            mmu.read_from_mem(&data, addr, size);
+        }
         OperName name = op_i->get_name();
         if (OPER_NAME_LHU == name
             || OPER_NAME_LBU ==name)
@@ -279,7 +296,7 @@ void Marlin::dump_instruction(Oper *op)
     if ((op->get_type() == OPER_TYPE_R) || (op->get_type() == OPER_TYPE_I)|| (op->get_type() == OPER_TYPE_S)|| (op->get_type() == OPER_TYPE_B))
     {
         std::string str_rs1(12 - reg_name(op->get_rs1().get_name()).length(), ' ');
-        trace << "rs1 " << reg_name(op->get_rs1().get_name())<< str_rs1;
+        trace << "rs1 " << reg_name(op->get_rs1().get_name())<< str_rs1 <<" (" << std::to_string(op->get_rs1().get_value()) << ")";
     }
     else
     {
@@ -289,7 +306,7 @@ void Marlin::dump_instruction(Oper *op)
     if ((op->get_type() == OPER_TYPE_R)|| (op->get_type() == OPER_TYPE_S)|| (op->get_type() == OPER_TYPE_B))
     {
         std::string str_rs2(12 - reg_name(op->get_rs2().get_name()).length(), ' ');
-        trace << "rs2 "<< reg_name(op->get_rs2().get_name())<< str_rs2;
+        trace << "rs2 "<< reg_name(op->get_rs2().get_name())<< str_rs2 <<" (" << std::to_string(op->get_rs2().get_value()) << ")";
     }
     else
     {
@@ -299,7 +316,7 @@ void Marlin::dump_instruction(Oper *op)
     if ((op->get_type() == OPER_TYPE_R)|| (op->get_type() == OPER_TYPE_I)|| (op->get_type() == OPER_TYPE_U)|| (op->get_type() == OPER_TYPE_J))
     {
         std::string str_rd(12 - reg_name(op->get_rd().get_name()).length(), ' ');
-        trace << "rd "<<reg_name(op->get_rd().get_name())<< str_rd;
+        trace << "rd "<<reg_name(op->get_rd().get_name())<< str_rd <<" (" << std::to_string(op->get_rd().get_value()) << ")";
     }
     else
     {

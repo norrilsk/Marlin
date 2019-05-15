@@ -63,6 +63,27 @@ void Config::read_config_file(std::string path)
             pipeline_stages = std::stol(value);
             continue;
         }
+        if (!name.compare(0, 16, "Store Queue size"))
+        {
+            sq_size = std::stol(value);
+            continue;
+        }
+        if (!name.compare(0, 18, "Enable Store Queue"))
+        {
+            if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
+                || !value.compare(0,4,"TRUE"))
+            {
+                enable_sq = true;
+                continue;
+            }
+            if (!value.compare(0,5,"false") || !value.compare(0,5,"False")
+                || !value.compare(0,5,"FALSE"))
+            {
+                enable_sq = false;
+                continue;
+            }
+            throw -1;
+        }
         if (!name.compare(0,9,"Whole log"))
         {
             if (!value.compare(0,4,"true") || !value.compare(0,4,"True")
